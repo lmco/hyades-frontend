@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     createUser: function () {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_role}`;
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`;
       this.axios
         .put(url, {
           name: this.name,
