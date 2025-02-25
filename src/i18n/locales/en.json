@@ -799,6 +799,8 @@
     "response_tooltip": "A response to the vulnerability by the manufacturer, supplier, or project responsible for the affected component or service",
     "risk_score": "Risk Score",
     "risk_type": "Risk Type",
+    "role": "Role",
+    "roles": "Roles",
     "rollback": "Rollback",
     "score": "Score",
     "search": "Search",
