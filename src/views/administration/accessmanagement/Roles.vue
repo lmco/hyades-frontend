@@ -97,7 +97,7 @@ export default {
                                               required="true" type="text" v-model="name" lazy="true" autofocus="true"
                                               v-debounce:750ms="updateRole" :debounce-events="'keyup'" />
                     <b-input-group-form-input id="input-role-description" :label="$t('message.description')" input-group-size="mb-3"
-                                              required="true" type="text" v-model="description" lazy="true" autofocus="true"
+                                              required="false" type="text" v-model="description" lazy="true" autofocus="true"
                                               v-debounce:750ms="updateRole" :debounce-events="'keyup'" />
                     <b-form-group :label="this.$t('admin.permissions')">
                       <div class="list-group">
@@ -140,6 +140,7 @@ export default {
                   .post(url, {
                     uuid: this.role.uuid,
                     name: this.name,
+                    description: this.description,
                   })
                   .then((response) => {
                     this.role = response.data;
