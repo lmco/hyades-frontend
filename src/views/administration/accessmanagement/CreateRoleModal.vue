@@ -1,6 +1,6 @@
 <template>
   <b-modal
-    id="CreateRoleModal"
+    id="createRoleModal"
     size="md"
     @hide="resetValues()"
     hide-header-close
@@ -34,7 +34,6 @@
 <script>
 import permissionsMixin from '../../../mixins/permissionsMixin';
 import BInputGroupFormInput from '../../../forms/BInputGroupFormInput';
-
 export default {
   mixins: [permissionsMixin],
   components: {
@@ -59,7 +58,7 @@ export default {
         .catch((error) => {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         });
-      this.$root.$emit('bv::hide::modal', 'CreateRoleModal');
+      this.$root.$emit('bv::hide::modal', 'createRoleModal');
       this.resetValues();
     },
     resetValues: function () {
