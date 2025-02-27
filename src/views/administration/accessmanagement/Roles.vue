@@ -96,7 +96,7 @@ export default {
                     <b-input-group-form-input id="input-role-name" :label="$t('admin.role_name')" input-group-size="mb-3"
                                               required="true" type="text" v-model="name" lazy="true" autofocus="true"
                                               v-debounce:750ms="updateRole" :debounce-events="'keyup'" />
-                    <b-input-group-form-input id="input-role-description" :label="$t('admin.description')" input-group-size="mb-3"
+                    <b-input-group-form-input id="input-role-description" :label="$t('message.description')" input-group-size="mb-3"
                                               required="true" type="text" v-model="description" lazy="true" autofocus="true"
                                               v-debounce:750ms="updateRole" :debounce-events="'keyup'" />
                     <b-form-group :label="this.$t('admin.permissions')">
