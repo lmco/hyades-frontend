@@ -383,6 +383,11 @@ export default {
               route: 'accessManagement/oidcGroups',
             },
             {
+              component: 'Roles',
+              name: this.$t('admin.roles'),
+              route: 'accessManagement/roles',
+            },
+            {
               component: 'Teams',
               name: this.$t('admin.teams'),
               route: 'accessManagement/teams',
