@@ -134,22 +134,7 @@ export default {
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectTeamModal')"/>
                       </div>
                     </b-form-group>
-                     <b-form-group :label="this.$t('admin.roles')">
-                        <div class="list-group">
-                        <span v-for="role in roles">
-                          <actionable-list-group-item :value="role.name" :delete-icon="true" v-on:actionClicked="removeRoleMembership(role.uuid)"/>
-                        </span>
-                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
-                      </div>
                     </b-form-group>
-                    <b-form-group :label="this.$t('admin.project_membership')">
-                       <div class="list-group">
-                        <span v-for="project in projects">
-                          <actionable-list-group-item :value="project.name" :delete-icon="true" v-on:actionClicked="removeProjectMembership(project.uuid)"/>
-                        </span>
-                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectProjectModal')"/>
-                       </div>
-                     </b-form-group>
                     <b-form-group :label="this.$t('admin.permissions')">
                       <div class="list-group">
                         <span v-for="permission in permissions">
@@ -158,8 +143,20 @@ export default {
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectPermissionModal')"/>
                       </div>
                     </b-form-group>
+                    <b-form-group :label="this.$t('admin.roles')">
+                      <div class="list-group">
+                        <span v-for="role in roles">
+                          <actionable-list-group-item :value="role.name" :delete-icon="true" v-on:actionClicked="removeRoleMembership(role.uuid)"/>
+                          <span v-for="project in role.projects">
+                            {{ project.name }}
+                          </span>
+                          <b-button size="sm" variant="outline-primary" @click="selectProjectForRole(role)">{{ $t('admin.select_project') }}</b-button>
+                        </span>
+                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
+                      </div>
+                    </b-form-group>
                   </b-col>
-                  <b-col sm="6">
+                 </b-col>
                     <div style="text-align:right">
                        <b-button variant="outline-danger" @click="deleteUser">{{ $t('admin.delete_user') }}</b-button>
                     </div>

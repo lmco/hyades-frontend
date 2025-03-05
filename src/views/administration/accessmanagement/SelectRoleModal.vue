@@ -1,6 +1,6 @@
 <template>
   <b-modal
-    id="selectTeamModal"
+    id="selectRoleModal"
     size="lg"
     hide-header-close
     no-stacking
@@ -73,7 +73,7 @@ export default {
           res.total = xhr.getResponseHeader('X-Total-Count');
           return res;
         },
-        url: `${this.$api.BASE_URL}/${this.$api.URL_TEAM}`,
+        url: `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`,
       },
     };
   },
