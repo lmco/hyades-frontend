@@ -26,6 +26,7 @@ import CreateRoleModal from './CreateRoleModal';
 import bootstrapTableMixin from '../../../mixins/bootstrapTableMixin';
 import EventBus from '../../../shared/eventbus';
 import ActionableListGroupItem from '../../components/ActionableListGroupItem';
+import SelectPermissionModal from './SelectPermissionModal';
 import permissionsMixin from '../../../mixins/permissionsMixin';
 import { Switch as cSwitch } from '@coreui/vue';
 import BInputGroupFormInput from '../../../forms/BInputGroupFormInput';
@@ -96,9 +97,6 @@ export default {
                     <b-input-group-form-input id="input-role-name" :label="$t('admin.role_name')" input-group-size="mb-3"
                                               required="true" type="text" v-model="name" lazy="true" autofocus="true"
                                               v-debounce:750ms="updateRole" :debounce-events="'keyup'" />
-                    <b-input-group-form-input id="input-role-description" :label="$t('message.description')" input-group-size="mb-3"
-                                              required="false" type="text" v-model="description" lazy="true" autofocus="true"
-                                              v-debounce:750ms="updateRole" :debounce-events="'keyup'" />
                     <b-form-group :label="this.$t('admin.permissions')">
                       <div class="list-group">
                         <span v-for="permission in permissions">
@@ -113,19 +111,20 @@ export default {
                        <b-button variant="outline-danger" @click="deleteRole">{{ $t('admin.delete_role') }}</b-button>
                     </div>
                   </b-col>
+                  <select-permission-modal v-on:selection="updatePermissionSelection" />
                 </b-row>
               `,
             mixins: [permissionsMixin],
             components: {
               cSwitch,
               ActionableListGroupItem,
+              SelectPermissionModal,
               BInputGroupFormInput,
             },
             data() {
               return {
                 role: row,
                 name: row.name,
-                description: row.description,
                 permissions: row.permissions,
                 labelIcon: {
                   dataOn: '\u2713',
@@ -140,7 +139,6 @@ export default {
                   .post(url, {
                     uuid: this.role.uuid,
                     name: this.name,
-                    description: this.description,
                   })
                   .then((response) => {
                     this.role = response.data;
@@ -203,9 +201,6 @@ export default {
               },
               syncVariables: function (role) {
                 this.role = role;
-                if (role.description) {
-                  this.description = role.description;
-                }
                 this.permissions = role.permissions;
               },
             },
