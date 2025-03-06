@@ -1,60 +1,51 @@
 <template>
   <b-modal
     id="selectRoleModal"
-    size="lg"
+    size="md"
+    @hide="resetValues()"
     hide-header-close
     no-stacking
     :title="$t('admin.select_role')"
   >
-    <bootstrap-table
-      ref="table"
-      :columns="columns"
-      :data="data"
-      :options="options"
-    >
-    </bootstrap-table>
+    <b-input-group :size="md" class="mb-3" prepend="Project">
+      <b-button size="md" variant="primary" v-b-modal="`selectProjectModal`">{{
+        $t('admin.select_project')
+      }}</b-button>
+      <b-form-input></b-form-input>
+      <b-input-group-append prepend="Role">
+        <b-dropdown text="Role" variant="info">
+          <b-dropdown-item>Action A</b-dropdown-item>
+          <b-dropdown-item>Action B</b-dropdown-item>
+        </b-dropdown>
+      </b-input-group-append>
+    </b-input-group>
+
     <template v-slot:modal-footer="{ cancel }">
       <b-button size="md" variant="secondary" @click="cancel()">{{
-        $t('message.cancel')
+        $t('message.close')
       }}</b-button>
-      <b-button
-        size="md"
-        variant="primary"
-        @click="$emit('selection', $refs.table.getSelections())"
-        >{{ $t('message.select') }}</b-button
-      >
+      <b-button size="md" variant="primary" @click="createRole()">{{
+        $t('message.create')
+      }}</b-button>
     </template>
   </b-modal>
 </template>
 
 <script>
-import xssFilters from 'xss-filters';
 import permissionsMixin from '../../../mixins/permissionsMixin';
-import common from '../../../shared/common';
+import SelectProjectModal from './SelectProjectModal.vue';
 
 export default {
   mixins: [permissionsMixin],
+  components: [SelectProjectModal],
   data() {
     return {
+      role: role,
+      project: project,
       labelIcon: {
         dataOn: '\u2713',
         dataOff: '\u2715',
       },
-      columns: [
-        {
-          field: 'state',
-          checkbox: true,
-          align: 'center',
-        },
-        {
-          title: this.$t('admin.role_name'),
-          field: 'name',
-          sortable: true,
-          formatter(value, row, index) {
-            return xssFilters.inHTMLData(common.valueWithDefault(value, ''));
-          },
-        },
-      ],
       data: [],
       options: {
         search: true,
@@ -76,6 +67,13 @@ export default {
         url: `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`,
       },
     };
+  },
+  methods: {
+    selectRole(row, role) {
+      // Handle role selection for the row
+      row.role = role.name;
+      this.$refs.table.refresh();
+    },
   },
 };
 </script>
