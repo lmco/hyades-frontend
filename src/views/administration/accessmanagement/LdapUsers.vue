@@ -144,18 +144,6 @@ export default {
                       </div>
                     </b-form-group>
                     <b-form-group :label="this.$t('admin.roles')">
-                      <b-input-group :size="md" class="mb-3">
-                        <b-button size="md" variant="primary" v-on:actionClicked="selectProjectModal">{{
-                          $t('admin.select_project')
-                        }}</b-button>
-                        <b-form-input></b-form-input>
-                        <b-input-group-append>
-                          <b-dropdown text="Role" variant="info">
-                            <b-dropdown-item>Action A</b-dropdown-item>
-                            <b-dropdown-item>Action B</b-dropdown-item>
-                          </b-dropdown>
-                        </b-input-group-append>
-                      </b-input-group>
                       <div class="list-group">
                         <span v-for="mappedrole in mappedroles">
                           <actionable-list-group-item :value="mappedrole.name" :delete-icon="true" v-on:actionClicked=""/>
