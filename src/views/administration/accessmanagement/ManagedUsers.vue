@@ -131,6 +131,14 @@ export default {
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectTeamModal')"/>
                       </div>
                     </b-form-group>
+                    <b-form-group :label="this.$t('admin.roles')">
+                      <div class="list-group">
+                        <span v-for="mappedrole in mappedroles">
+                          <actionable-list-group-item :value="mappedrole.name" :delete-icon="true" v-on:actionClicked=""/>
+                        </span>
+                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
+                      </div>
+                    </b-form-group>
                     <b-form-group :label="this.$t('admin.permissions')">
                       <div class="list-group">
                         <span v-for="permission in permissions">
@@ -139,11 +147,6 @@ export default {
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectPermissionModal')"/>
                       </div>
                     </b-form-group>
-                    <b-form-group :label="this.$t('admin.roles')">
-                    <div class="list-group">
-                      <role-form-input-group/>
-                    </div>
-                  </b-form-group>
                   </b-col>
                   <b-col sm="6">
                     <b-input-group-form-input id="input-managed-user-fullname" :label="$t('message.fullname')" input-group-size="mb-3"
@@ -165,6 +168,7 @@ export default {
                   <select-team-modal v-on:selection="updateTeamSelection" />
                   <select-permission-modal v-on:selection="updatePermissionSelection" />
                   <change-password-modal :managed-user="managedUser" />
+                  <select-role-modal v-on:selection="selectRoleModal" />
                 </b-row>
               `,
             mixins: [permissionsMixin],

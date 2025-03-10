@@ -126,7 +126,7 @@ export default {
             i18n,
             template: `
                 <b-row class="expanded-row">
-                  <b-col sm="10">
+                  <b-col sm="6">
                     <b-form-group :label="this.$t('admin.team_membership')">
                       <div class="list-group">
                         <span v-for="team in teams">
@@ -135,27 +135,7 @@ export default {
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectTeamModal')"/>
                       </div>
                     </b-form-group>
-                    <b-form-group :label="this.$t('admin.permissions')">
-                      <div class="list-group">
-                        <span v-for="permission in permissions">
-                          <actionable-list-group-item :value="permission.name" :delete-icon="true" v-on:actionClicked="removePermission(permission)"/>
-                        </span>
-                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectProjectModal')"/>
-                      </div>
-                    </b-form-group>
                     <b-form-group :label="this.$t('admin.roles')">
-                      <b-input-group :size="md" class="mb-3">
-                        <b-button size="md" variant="primary" v-on:actionClicked="selectProjectModal">{{
-                          $t('admin.select_project')
-                        }}</b-button>
-                        <b-form-input></b-form-input>
-                        <b-input-group-append>
-                          <b-dropdown text="Role" variant="info">
-                            <b-dropdown-item>Action A</b-dropdown-item>
-                            <b-dropdown-item>Action B</b-dropdown-item>
-                          </b-dropdown>
-                        </b-input-group-append>
-                      </b-input-group>
                       <div class="list-group">
                         <span v-for="mappedrole in mappedroles">
                           <actionable-list-group-item :value="mappedrole.name" :delete-icon="true" v-on:actionClicked=""/>
@@ -163,10 +143,20 @@ export default {
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
                       </div>
                     </b-form-group>
+                    <b-form-group :label="this.$t('admin.permissions')">
+                      <div class="list-group">
+                        <span v-for="permission in permissions">
+                          <actionable-list-group-item :value="permission.name" :delete-icon="true" v-on:actionClicked="removePermission(permission)"/>
+                        </span>
+                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectPermissionModal')"/>
+                      </div>
+                    </b-form-group>
                   </b-col>
-                  <div style="text-align:right">
-                    <b-button variant="outline-danger" @click="deleteUser">{{ $t('admin.delete_user') }}</b-button>
-                  </div>
+                  <b-col sm="6">
+                    <div style="text-align:right">
+                       <b-button variant="outline-danger" @click="deleteUser">{{ $t('admin.delete_user') }}</b-button>
+                    </div>
+                  </b-col>
                   <select-role-modal v-on:selection="selectRoleModal" />
                   <select-team-modal v-on:selection="updateTeamSelection" />
                   <select-permission-modal v-on:selection="updatePermissionSelection" />
