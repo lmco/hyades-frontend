@@ -8,7 +8,7 @@
     :title="$t('admin.assign_role')"
   >
     <b-card no-body :header="header">
-      <b-card-body>
+      <b-card-body class="pb-0">
         <b-form-group :label="this.$t('admin.project_access')">
           <div class="list-group">
             <span v-for="project in projects" :key="project.uuid">
@@ -28,7 +28,7 @@
           </div>
         </b-form-group>
       </b-card-body>
-      <b-card-body>
+      <b-card-body class="pb-0">
         <b-input-group-form-select
           v-model="$selectedRole"
           :options="availableRoles"
@@ -50,7 +50,6 @@
 
 <script>
 import BInputGroupFormSelect from '../../../forms/BInputGroupFormSelect';
-// import BInputGroupFormInput from '../../../forms/BInputGroupFormInput';
 import ActionableListGroupItem from '../../components/ActionableListGroupItem';
 import SelectProjectModal from './SelectProjectModal';
 
@@ -61,7 +60,6 @@ export default {
   },
   components: {
     BInputGroupFormSelect,
-    // BInputGroupFormInput,
     ActionableListGroupItem,
     SelectProjectModal,
   },
