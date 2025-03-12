@@ -9,24 +9,12 @@
   >
     <b-card no-body :header="header">
       <b-card-body class="pb-0">
-        <b-form-group :label="this.$t('admin.project_access')">
-          <div class="list-group">
-            <span v-for="project in projects" :key="project.uuid">
-              <actionable-list-group-item
-                :value="projectLabel(project.name, project.version)"
-                :href="projectUri(project.uuid)"
-                :delete-icon="true"
-                v-on:actionClicked="removeProjectMapping(project.uuid)"
-              />
-            </span>
-            <actionable-list-group-item
-              :add-icon="true"
-              v-on:actionClicked="
-                $root.$emit('bv::show::modal', 'selectProjectModal')
-              "
-            />
-          </div>
-        </b-form-group>
+        <b-input-group-form-select
+          v-model="$selectedProject"
+          :options="availableProjects"
+          :label="$t('admin.project')"
+          rules="required"
+        />
       </b-card-body>
       <b-card-body class="pb-0">
         <b-input-group-form-select
@@ -41,7 +29,7 @@
       <b-button size="md" variant="secondary" @click="cancel()">{{
         $t('message.close')
       }}</b-button>
-      <b-button size="md" variant="primary" @click="createRole()">{{
+      <b-button size="md" variant="primary" @click="createRoleMapping()">{{
         $t('message.assign')
       }}</b-button>
     </template>
@@ -55,9 +43,6 @@ import SelectProjectModal from './SelectProjectModal';
 
 export default {
   name: 'selectRoleModal',
-  props: {
-    type: String,
-  },
   components: {
     BInputGroupFormSelect,
     ActionableListGroupItem,
@@ -69,19 +54,17 @@ export default {
   },
   mounted() {
     this.loadRoles();
+    this.loadProjects();
+  },
+  props: {
+    username: String,
   },
   data() {
     return {
-      identifier: null,
-      url: null,
+      selectedProject: null,
       selectedRole: null,
       availableRoles: [],
-      initialRepositoryType: null,
-      internal: false,
-      repository_authentication: false,
-      username: null,
-      password: null,
-      enabled: true,
+      availableProjects: [],
       labelIcon: {
         dataOn: '\u2713',
         dataOff: '\u2715',
@@ -89,18 +72,13 @@ export default {
     };
   },
   methods: {
-    createRepository: function () {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_REPOSITORY}`;
+    createRoleMapping: function () {
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/role`;
       this.axios
-        .put(url, {
-          type: this.repositoryType,
-          identifier: this.identifier,
-          url: this.url,
-          internal: this.internal,
-          authenticationRequired: this.repository_authentication,
-          username: this.username,
-          password: this.password || null,
-          enabled: this.enabled,
+        .post(url, {
+          projectName: this.selectedProject.name,
+          projectVersion: this.selectedProject.version,
+          selectedRole: this.selectedRole.uuid,
         })
         .then((response) => {
           this.$emit('refreshTable');
@@ -119,14 +97,83 @@ export default {
         });
       this.resetValues();
     },
+    updateProjectSelection: function (selections) {
+      this.$root.$emit('bv::hide::modal', 'selectProjectModal');
+      for (let i = 0; i < selections.length; i++) {
+        let selection = selections[i];
+        let url = `${this.$api.BASE_URL}/${this.$api.URL_ACL_MAPPING}`;
+        this.axios
+          .put(url, {
+            team: this.team.uuid,
+            project: selection.uuid,
+          })
+          .then((response) => {
+            if (this.projects === undefined || this.projects === null) {
+              this.projects = [];
+            }
+            this.projects.push({
+              name: selection.name,
+              version: selection.version,
+              uuid: selection.uuid,
+            });
+            this.projects.sort();
+            this.$toastr.s(this.$t('message.updated'));
+          })
+          .catch((error) => {
+            if (error.response.status === 304) {
+              //this.$toastr.w(this.$t('condition.unsuccessful_action'));
+            } else {
+              this.$toastr.w(this.$t('condition.unsuccessful_action'));
+            }
+          });
+      }
+    },
+    removeProjectMapping: function (projectUuid) {
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_ACL_MAPPING}/team/${this.team.uuid}/project/${projectUuid}`;
+      this.axios
+        .delete(url)
+        .then((response) => {
+          let k = [];
+          for (let i = 0; i < this.projects.length; i++) {
+            if (this.projects[i].uuid !== projectUuid) {
+              k.push(this.projects[i]);
+            }
+          }
+          this.projects = k;
+          this.$toastr.s(this.$t('message.updated'));
+        })
+        .catch((error) => {
+          this.$toastr.w(this.$t('condition.unsuccessful_action'));
+        });
+    },
     loadRoles: function () {
       let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`;
-      this.axios.get(url).then((response) => {
-        this.availableRoles = response.data.map((d) => ({
-          value: d.id,
-          text: d.name,
-        }));
-      });
+      this.axios
+        .get(url)
+        .then((response) => {
+          this.availableRoles = response.data.map((d) => ({
+            value: d.id,
+            text: d.name,
+          }));
+        })
+        .catch((error) => {
+          this.$toastr.w(this.$t('condition.unsuccessful_action'));
+        });
+    },
+    loadProjects: function () {
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_ACL_USER}/${this.username}`;
+      this.axios
+        .get(url)
+        .then((response) => {
+          this.availableProjects = response.data.map((d) => ({
+            value: d.id,
+            text: d.name,
+          }));
+          // this.availableProjects = response.data;
+        })
+        .catch((error) => {
+          this.$toastr.w(this.$t('condition.unsuccessful_action'));
+        });
     },
     resetValues: function () {
       this.repositoryType = this.initialRepositoryType;

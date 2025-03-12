@@ -37,6 +37,7 @@ import permissionsMixin from '../../../mixins/permissionsMixin';
 import { Switch as cSwitch } from '@coreui/vue';
 import BInputGroupFormInput from '../../../forms/BInputGroupFormInput';
 import SelectRoleModal from './SelectRoleModal.vue';
+import SelectProjectModal from './SelectProjectModal.vue';
 
 export default {
   props: {
@@ -176,6 +177,7 @@ export default {
               ActionableListGroupItem,
               SelectTeamModal,
               SelectPermissionModal,
+              SelectProjectModal,
               SelectRoleModal,
               ChangePasswordModal,
               BInputGroupFormInput,
