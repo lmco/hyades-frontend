@@ -43,7 +43,6 @@ export const VULNERABILITY_MANAGEMENT_DELETE = 'VULNERABILITY_MANAGEMENT_DELETE'
 export const VULNERABILITY_MANAGEMENT_READ = 'VULNERABILITY_MANAGEMENT_READ';
 export const VULNERABILITY_MANAGEMENT_UPDATE = 'VULNERABILITY_MANAGEMENT_UPDATE';
 
-
 /**
  * Determines if the current logged in user has a specific permission.
  * If the decodedToken is not passed, the function will automatically

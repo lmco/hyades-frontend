@@ -157,7 +157,7 @@ export default {
                        <b-button variant="outline-danger" @click="deleteUser">{{ $t('admin.delete_user') }}</b-button>
                     </div>
                   </b-col>
-                  <select-role-modal v-on:selection="selectRoleModal" />
+                  <select-role-modal v-on:selection="selectRoleModal" :username="username" />
                   <select-team-modal v-on:selection="updateTeamSelection" />
                   <select-permission-modal v-on:selection="updatePermissionSelection" />
                   <select-project-modal v-on:selection="updateProjectSelection" />

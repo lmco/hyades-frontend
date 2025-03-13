@@ -34,6 +34,7 @@ import SelectTeamModal from './SelectTeamModal';
 import SelectPermissionModal from './SelectPermissionModal';
 import permissionsMixin from '../../../mixins/permissionsMixin';
 import SelectProjectModal from './SelectProjectModal.vue';
+import SelectRoleModal from './SelectRoleModal.vue';
 
 export default {
   props: {
@@ -152,6 +153,7 @@ export default {
               SelectTeamModal,
               SelectPermissionModal,
               SelectProjectModal,
+              SelectRoleModal,
             },
             data() {
               return {
