@@ -7,21 +7,23 @@
     no-stacking
     :title="$t('admin.assign_role')"
   >
-    <b-card no-body :header="header">
+    <b-card no-body>
       <b-card-body class="pb-0">
         <b-input-group-form-select
-          v-model="$selectedProject"
+          id="input-selected-project"
+          v-model="selectedProject"
           :options="availableProjects"
           :label="$t('admin.project')"
-          rules="required"
+          required="true"
         />
       </b-card-body>
       <b-card-body class="pb-0">
         <b-input-group-form-select
-          v-model="$selectedRole"
+          id="input-selected-role"
+          v-model="selectedRole"
           :options="availableRoles"
           :label="$t('admin.role')"
-          rules="required"
+          required="true"
         />
       </b-card-body>
     </b-card>
@@ -38,19 +40,11 @@
 
 <script>
 import BInputGroupFormSelect from '../../../forms/BInputGroupFormSelect';
-import ActionableListGroupItem from '../../components/ActionableListGroupItem';
-import SelectProjectModal from './SelectProjectModal';
 
 export default {
   name: 'selectRoleModal',
   components: {
     BInputGroupFormSelect,
-    ActionableListGroupItem,
-    SelectProjectModal,
-  },
-  created() {
-    this.initialRepositoryType = this.type;
-    this.repositoryType = this.type;
   },
   mounted() {
     this.loadRoles();
@@ -59,10 +53,16 @@ export default {
   props: {
     username: String,
   },
+  created() {
+    this.initialRole = '';
+    this.initialProject = '';
+  },
   data() {
     return {
-      selectedProject: null,
-      selectedRole: null,
+      initialProject: '',
+      initialRole: '',
+      selectedProject: '',
+      selectedRole: '',
       availableRoles: [],
       availableProjects: [],
       labelIcon: {
@@ -76,75 +76,19 @@ export default {
       let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/role`;
       this.axios
         .post(url, {
-          projectName: this.selectedProject.name,
-          projectVersion: this.selectedProject.version,
-          selectedRole: this.selectedRole.uuid,
+          roleUUID: this.selectedRole,
+          projectUUID: this.selectedProject,
         })
         .then((response) => {
           this.$emit('refreshTable');
-          this.$toastr.s(this.$t('admin.repository_created'));
-          this.$root.$emit(
-            'bv::hide::modal',
-            'repositoryCreateRepositoryModal',
-          );
+          this.$toastr.s(this.$t('admin.role_assigned'));
+          this.$root.$emit('bv::hide::modal', 'selectRoleModal');
         })
         .catch((error) => {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
-          this.$root.$emit(
-            'bv::hide::modal',
-            'repositoryCreateRepositoryModal',
-          );
+          this.$root.$emit('bv::hide::modal', 'selectRoleModal');
         });
       this.resetValues();
-    },
-    updateProjectSelection: function (selections) {
-      this.$root.$emit('bv::hide::modal', 'selectProjectModal');
-      for (let i = 0; i < selections.length; i++) {
-        let selection = selections[i];
-        let url = `${this.$api.BASE_URL}/${this.$api.URL_ACL_MAPPING}`;
-        this.axios
-          .put(url, {
-            team: this.team.uuid,
-            project: selection.uuid,
-          })
-          .then((response) => {
-            if (this.projects === undefined || this.projects === null) {
-              this.projects = [];
-            }
-            this.projects.push({
-              name: selection.name,
-              version: selection.version,
-              uuid: selection.uuid,
-            });
-            this.projects.sort();
-            this.$toastr.s(this.$t('message.updated'));
-          })
-          .catch((error) => {
-            if (error.response.status === 304) {
-              //this.$toastr.w(this.$t('condition.unsuccessful_action'));
-            } else {
-              this.$toastr.w(this.$t('condition.unsuccessful_action'));
-            }
-          });
-      }
-    },
-    removeProjectMapping: function (projectUuid) {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_ACL_MAPPING}/team/${this.team.uuid}/project/${projectUuid}`;
-      this.axios
-        .delete(url)
-        .then((response) => {
-          let k = [];
-          for (let i = 0; i < this.projects.length; i++) {
-            if (this.projects[i].uuid !== projectUuid) {
-              k.push(this.projects[i]);
-            }
-          }
-          this.projects = k;
-          this.$toastr.s(this.$t('message.updated'));
-        })
-        .catch((error) => {
-          this.$toastr.w(this.$t('condition.unsuccessful_action'));
-        });
     },
     loadRoles: function () {
       let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`;
@@ -152,7 +96,7 @@ export default {
         .get(url)
         .then((response) => {
           this.availableRoles = response.data.map((d) => ({
-            value: d.id,
+            value: d.uuid,
             text: d.name,
           }));
         })
@@ -166,18 +110,17 @@ export default {
         .get(url)
         .then((response) => {
           this.availableProjects = response.data.map((d) => ({
-            value: d.id,
+            value: d.uuid,
             text: d.name,
           }));
-          // this.availableProjects = response.data;
         })
         .catch((error) => {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         });
     },
     resetValues: function () {
-      this.repositoryType = this.initialRepositoryType;
-      this.url = null;
+      this.selectedProject = this.initialProject;
+      this.selectedRole = this.initialRole;
     },
   },
 };
