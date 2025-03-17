@@ -19,7 +19,6 @@
       </bootstrap-table>
     </b-card-body>
     <create-ldap-user-modal v-on:refreshTable="refreshTable" />
-    <select-project-modal v-on:selection="updateProjectSelection" />
   </b-card>
 </template>
 
@@ -36,7 +35,6 @@ import SelectTeamModal from './SelectTeamModal';
 import SelectPermissionModal from './SelectPermissionModal';
 import permissionsMixin from '../../../mixins/permissionsMixin';
 import SelectRoleModal from './SelectRoleModal.vue';
-import SelectProjectModal from './SelectProjectModal.vue';
 
 export default {
   props: {
@@ -45,7 +43,6 @@ export default {
   mixins: [bootstrapTableMixin],
   components: {
     CreateLdapUserModal,
-    SelectProjectModal,
   },
   mounted() {
     EventBus.$on('admin:ldapusers:rowUpdate', (index, row) => {
@@ -137,8 +134,8 @@ export default {
                     </b-form-group>
                     <b-form-group :label="this.$t('admin.roles')">
                       <div class="list-group">
-                        <span v-for="mappedrole in mappedroles">
-                          <actionable-list-group-item :value="mappedrole.name" :delete-icon="true" v-on:actionClicked=""/>
+                        <span v-for="role in roles">
+                          <actionable-list-group-item :value="role.name" :delete-icon="true" v-on:actionClicked="removeRole(role)"/>
                         </span>
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
                       </div>
@@ -160,7 +157,6 @@ export default {
                   <select-role-modal v-on:selection="selectRoleModal" :username="username" />
                   <select-team-modal v-on:selection="updateTeamSelection" />
                   <select-permission-modal v-on:selection="updatePermissionSelection" />
-                  <select-project-modal v-on:selection="updateProjectSelection" />
                 </b-row>
               `,
             mixins: [permissionsMixin],
@@ -170,7 +166,6 @@ export default {
               SelectRoleModal,
               SelectTeamModal,
               SelectPermissionModal,
-              SelectProjectModal,
             },
             data() {
               return {
@@ -178,8 +173,7 @@ export default {
                 username: row.username,
                 teams: row.teams,
                 permissions: row.permissions,
-                projects: row.projects,
-                mappedroles: row.mappedroles,
+                roles: row.roles,
               };
             },
             methods: {
@@ -232,81 +226,6 @@ export default {
                 let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/membership`;
                 this.axios
                   .delete(url, { data: { uuid: teamUuid } })
-                  .then((response) => {
-                    this.syncVariables(response.data);
-                    EventBus.$emit(
-                      'admin:ldapusers:rowUpdate',
-                      index,
-                      this.ldapUser,
-                    );
-                    this.$toastr.s(this.$t('message.updated'));
-                  })
-                  .catch((error) => {
-                    this.$toastr.w(this.$t('condition.unsuccessful_action'));
-                  });
-              },
-              updateRoleSelection: function (selections) {
-                this.$root.$emit('bv::hide::modal', 'selectRoleModal');
-                for (let i = 0; i < selections.length; i++) {
-                  let selection = selections[i];
-                  let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/role`;
-                  this.axios
-                    .post(url, {
-                      uuid: selection.uuid,
-                    })
-                    .then((response) => {
-                      this.syncVariables(response.data);
-                      EventBus.$emit(
-                        'admin:ldapusers:rowUpdate',
-                        index,
-                        this.ldapUser,
-                      );
-                      this.$toastr.s(this.$t('message.updated'));
-                    })
-                    .catch((error) => {
-                      if (error.response.status === 304) {
-                        //this.$toastr.w(this.$t('condition.unsuccessful_action'));
-                      } else {
-                        this.$toastr.w(
-                          this.$t('condition.unsuccessful_action'),
-                        );
-                      }
-                    });
-                }
-              },
-              updateProjectSelection: function (selections) {
-                this.$root.$emit('bv::hide::modal', 'selectProjectModal');
-                for (let i = 0; i < selections.length; i++) {
-                  let selection = selections[i];
-                  let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/project`;
-                  this.axios
-                    .post(url, {
-                      uuid: selection.uuid,
-                    })
-                    .then((response) => {
-                      this.syncVariables(response.data);
-                      EventBus.$emit(
-                        'admin:ldapusers:rowUpdate',
-                        index,
-                        this.ldapUser,
-                      );
-                      this.$toastr.s(this.$t('message.updated'));
-                    })
-                    .catch((error) => {
-                      if (error.response.status === 304) {
-                        //this.$toastr.w(this.$t('condition.unsuccessful_action'));
-                      } else {
-                        this.$toastr.w(
-                          this.$t('condition.unsuccessful_action'),
-                        );
-                      }
-                    });
-                }
-              },
-              removeProjectMembership: function (projectUuid) {
-                let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/project`;
-                this.axios
-                  .delete(url, { data: { uuid: projectUuid } })
                   .then((response) => {
                     this.syncVariables(response.data);
                     EventBus.$emit(
