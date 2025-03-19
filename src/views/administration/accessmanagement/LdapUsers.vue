@@ -30,7 +30,7 @@ import CreateLdapUserModal from './CreateLdapUserModal';
 import bootstrapTableMixin from '../../../mixins/bootstrapTableMixin';
 import EventBus from '../../../shared/eventbus';
 import ActionableListGroupItem from '../../components/ActionableListGroupItem';
-import MappedRoleListGroupItem from './MappedRoleListGroupItem.vue';
+import ProjectRoleListGroupItem from './ProjectRoleListGroupItem.vue';
 import SelectTeamModal from './SelectTeamModal';
 import SelectPermissionModal from './SelectPermissionModal';
 import permissionsMixin from '../../../mixins/permissionsMixin';
@@ -88,18 +88,6 @@ export default {
               : 0;
           },
         },
-        {
-          title: this.$t('admin.roles'),
-          field: 'roles',
-          sortable: false,
-          formatter(value, row, index) {
-            return value
-              ? xssFilters.inHTMLData(
-                  common.valueWithDefault(value.length, '0'),
-                )
-              : 0;
-          },
-        },
       ],
       data: [],
       options: {
@@ -134,8 +122,8 @@ export default {
                     </b-form-group>
                     <b-form-group :label="this.$t('admin.roles')">
                       <div class="list-group">
-                        <span v-for="role in roles">
-                          <actionable-list-group-item :value="role.name" :delete-icon="true" v-on:actionClicked="removeRole(role)"/>
+                        <span v-for="projectRole in projectRoles">
+                          <actionable-list-group-item :value="projectRole.role.name" :delete-icon="true" v-on:actionClicked="removeRole(role)"/>
                         </span>
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
                       </div>
@@ -154,7 +142,7 @@ export default {
                        <b-button variant="outline-danger" @click="deleteUser">{{ $t('admin.delete_user') }}</b-button>
                     </div>
                   </b-col>
-                  <select-role-modal v-on:selection="selectRoleModal" :username="username" />
+                  <select-role-modal v-on:selection="updateRoleSelection" :username="username" />
                   <select-team-modal v-on:selection="updateTeamSelection" />
                   <select-permission-modal v-on:selection="updatePermissionSelection" />
                 </b-row>
@@ -162,7 +150,7 @@ export default {
             mixins: [permissionsMixin],
             components: {
               ActionableListGroupItem,
-              MappedRoleListGroupItem,
+              ProjectRoleListGroupItem,
               SelectRoleModal,
               SelectTeamModal,
               SelectPermissionModal,
@@ -173,8 +161,11 @@ export default {
                 username: row.username,
                 teams: row.teams,
                 permissions: row.permissions,
-                roles: row.roles,
+                projectRoles: [],
               };
+            },
+            created() {
+              this.loadUserRoles();
             },
             methods: {
               deleteUser: function () {
@@ -244,8 +235,8 @@ export default {
                 this.axios
                   .delete(url, {
                     data: {
-                      roleName: role.name,
-                      projectName: role.projectName,
+                      roleUUID: role.uuid,
+                      projectUUID: role.projectUUID,
                     },
                   })
                   .then((response) => {
@@ -296,12 +287,40 @@ export default {
                     this.$toastr.w(this.$t('condition.unsuccessful_action'));
                   });
               },
+              loadUserRoles: function () {
+                if (this.projectRoles && this.projectRoles.length > 0) {
+                  // Roles are already cached, no need to fetch again
+                  return Promise.resolve(this.projectRoles);
+                }
+
+                const url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}/${this.username}/roles`;
+                return this.axios
+                  .get(url)
+                  .then((response) => {
+                    console.log(response);
+                    this.projectRoles = Array.isArray(response.data)
+                      ? response.data
+                      : response.data
+                        ? [response.data]
+                        : [];
+                    return this.projectRoles;
+                  })
+                  .catch((error) => {
+                    console.error('Error loading user roles:', error);
+                    this.projectRoles = [];
+                  });
+              },
               syncVariables: function (ldapUser) {
                 this.ldapUser = ldapUser;
                 this.username = ldapUser.username;
-                this.roles = ldapUser.roles;
+                this.loadUserRoles();
                 this.teams = ldapUser.teams;
                 this.permissions = ldapUser.permissions;
+              },
+              updateRoleSelection: function () {
+                this.$root.$emit('bv::hide::modal', 'selectRoleModal');
+                this.syncVariables(this.username);
+                this.refreshTable();
               },
             },
           });
