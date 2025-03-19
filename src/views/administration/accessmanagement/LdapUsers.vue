@@ -123,7 +123,7 @@ export default {
                     <b-form-group :label="this.$t('admin.roles')">
                       <div class="list-group">
                         <span v-for="projectRole in projectRoles">
-                          <actionable-list-group-item :value="projectRole.role.name" :delete-icon="true" v-on:actionClicked="removeRole(role)"/>
+                          <project-role-list-group-item :projectRole="projectRole" :delete-icon="true" v-on:actionClicked="removeRole(projectRole)"/>
                         </span>
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
                       </div>
@@ -288,22 +288,11 @@ export default {
                   });
               },
               loadUserRoles: function () {
-                if (this.projectRoles && this.projectRoles.length > 0) {
-                  // Roles are already cached, no need to fetch again
-                  return Promise.resolve(this.projectRoles);
-                }
-
-                const url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}/${this.username}/roles`;
+                let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}/${this.username}/roles`;
                 return this.axios
                   .get(url)
                   .then((response) => {
-                    console.log(response);
-                    this.projectRoles = Array.isArray(response.data)
-                      ? response.data
-                      : response.data
-                        ? [response.data]
-                        : [];
-                    return this.projectRoles;
+                    this.projectRoles = response.data;
                   })
                   .catch((error) => {
                     console.error('Error loading user roles:', error);
@@ -319,6 +308,7 @@ export default {
               },
               updateRoleSelection: function () {
                 this.$root.$emit('bv::hide::modal', 'selectRoleModal');
+                this.$toastr.s(this.$t('message.updated'));
                 this.syncVariables(this.username);
                 this.refreshTable();
               },
