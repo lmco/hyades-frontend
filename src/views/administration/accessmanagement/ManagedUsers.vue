@@ -36,8 +36,6 @@ import SelectPermissionModal from './SelectPermissionModal';
 import permissionsMixin from '../../../mixins/permissionsMixin';
 import { Switch as cSwitch } from '@coreui/vue';
 import BInputGroupFormInput from '../../../forms/BInputGroupFormInput';
-import SelectRoleModal from './SelectRoleModal.vue';
-import SelectProjectModal from './SelectProjectModal.vue';
 
 export default {
   props: {
@@ -131,14 +129,6 @@ export default {
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectTeamModal')"/>
                       </div>
                     </b-form-group>
-                    <b-form-group :label="this.$t('admin.roles')">
-                      <div class="list-group">
-                        <span v-for="mappedrole in mappedroles">
-                          <actionable-list-group-item :value="mappedrole.name" :delete-icon="true" v-on:actionClicked=""/>
-                        </span>
-                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
-                      </div>
-                    </b-form-group>
                     <b-form-group :label="this.$t('admin.permissions')">
                       <div class="list-group">
                         <span v-for="permission in permissions">
@@ -168,7 +158,6 @@ export default {
                   <select-team-modal v-on:selection="updateTeamSelection" />
                   <select-permission-modal v-on:selection="updatePermissionSelection" />
                   <change-password-modal :managed-user="managedUser" />
-                  <select-role-modal v-on:selection="selectRoleModal" />
                 </b-row>
               `,
             mixins: [permissionsMixin],
@@ -177,8 +166,6 @@ export default {
               ActionableListGroupItem,
               SelectTeamModal,
               SelectPermissionModal,
-              SelectProjectModal,
-              SelectRoleModal,
               ChangePasswordModal,
               BInputGroupFormInput,
             },

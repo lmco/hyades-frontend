@@ -12,7 +12,12 @@
         <b-input-group-form-select
           id="input-selected-project"
           v-model="selectedProject"
-          :options="availableProjects"
+          :options="
+            availableProjects.map((project) => ({
+              value: project.uuid,
+              text: project.name,
+            }))
+          "
           :label="$t('admin.project')"
           required="true"
         />
@@ -21,7 +26,12 @@
         <b-input-group-form-select
           id="input-selected-role"
           v-model="selectedRole"
-          :options="availableRoles"
+          :options="
+            availableRoles.map((role) => ({
+              value: role.uuid,
+              text: role.name,
+            }))
+          "
           :label="$t('admin.role')"
           required="true"
         />
@@ -95,10 +105,7 @@ export default {
       this.axios
         .get(url)
         .then((response) => {
-          this.availableRoles = response.data.map((d) => ({
-            value: d.uuid,
-            text: d.name,
-          }));
+          this.availableRoles = response.data;
         })
         .catch((error) => {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
@@ -109,10 +116,7 @@ export default {
       this.axios
         .get(url)
         .then((response) => {
-          this.availableProjects = response.data.map((d) => ({
-            value: d.uuid,
-            text: d.name,
-          }));
+          this.availableProjects = response.data;
         })
         .catch((error) => {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
