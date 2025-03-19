@@ -35,6 +35,7 @@ import SelectTeamModal from './SelectTeamModal';
 import SelectPermissionModal from './SelectPermissionModal';
 import permissionsMixin from '../../../mixins/permissionsMixin';
 import SelectRoleModal from './SelectRoleModal.vue';
+import rolesMixin from '../../../mixins/rolesMixin';
 
 export default {
   props: {
@@ -123,7 +124,7 @@ export default {
                     <b-form-group :label="this.$t('admin.roles')">
                       <div class="list-group">
                         <span v-for="projectRole in projectRoles">
-                          <project-role-list-group-item :projectRole="projectRole" :delete-icon="true" v-on:actionClicked="removeRole(projectRole)"/>
+                          <project-role-list-group-item :projectRole="projectRole" :delete-icon="true" v-on:removeClicked="removeRole(projectRole)"/>
                         </span>
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
                       </div>
@@ -147,7 +148,7 @@ export default {
                   <select-permission-modal v-on:selection="updatePermissionSelection" />
                 </b-row>
               `,
-            mixins: [permissionsMixin],
+            mixins: [permissionsMixin, rolesMixin],
             components: {
               ActionableListGroupItem,
               ProjectRoleListGroupItem,
@@ -231,26 +232,7 @@ export default {
                   });
               },
               removeRole: function (role) {
-                let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/role`;
-                this.axios
-                  .delete(url, {
-                    data: {
-                      roleUUID: role.uuid,
-                      projectUUID: role.projectUUID,
-                    },
-                  })
-                  .then((response) => {
-                    this.syncVariables(response.data);
-                    EventBus.$emit(
-                      'admin:ldapusers:rowUpdate',
-                      index,
-                      this.ldapUser,
-                    );
-                    this.$toastr.s(this.$t('message.updated'));
-                  })
-                  .catch((error) => {
-                    this.$toastr.w(this.$t('condition.unsuccessful_action'));
-                  });
+                this.unassignRole(role);
               },
               updatePermissionSelection: function (selections) {
                 this.$root.$emit('bv::hide::modal', 'selectPermissionModal');
@@ -287,18 +269,6 @@ export default {
                     this.$toastr.w(this.$t('condition.unsuccessful_action'));
                   });
               },
-              loadUserRoles: function () {
-                let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}/${this.username}/roles`;
-                return this.axios
-                  .get(url)
-                  .then((response) => {
-                    this.projectRoles = response.data;
-                  })
-                  .catch((error) => {
-                    console.error('Error loading user roles:', error);
-                    this.projectRoles = [];
-                  });
-              },
               syncVariables: function (ldapUser) {
                 this.ldapUser = ldapUser;
                 this.username = ldapUser.username;
@@ -309,7 +279,7 @@ export default {
               updateRoleSelection: function () {
                 this.$root.$emit('bv::hide::modal', 'selectRoleModal');
                 this.$toastr.s(this.$t('message.updated'));
-                this.syncVariables(this.username);
+                this.loadUserRoles();
                 this.refreshTable();
               },
             },

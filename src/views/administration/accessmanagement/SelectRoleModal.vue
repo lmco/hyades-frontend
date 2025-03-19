@@ -93,12 +93,12 @@ export default {
           this.$emit('refreshTable');
           this.$toastr.s(this.$t('admin.role_assigned'));
           this.$root.$emit('bv::hide::modal', 'selectRoleModal');
+          this.$emit('refreshTable');
         })
         .catch((error) => {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
           this.$root.$emit('bv::hide::modal', 'selectRoleModal');
         });
-      this.resetValues();
     },
     loadRoles: function () {
       let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`;
