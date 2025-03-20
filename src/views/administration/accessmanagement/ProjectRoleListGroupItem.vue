@@ -7,7 +7,6 @@
           size="sm"
           class="action-icon"
           v-b-tooltip.hover
-          v-b-modal="`editApiKeyCommentModal-${keyId}`"
           :title="$t('admin.edit_role')"
         >
           <span class="fa fa-edit"></span>
@@ -21,7 +20,6 @@
         >
           <span class="fa fa-trash-o"></span>
         </b-button>
-        <edit-api-key-comment-modal :key-id="this.projectRole" />
       </div>
     </div>
     <p class="mt-2 font-weight-light">{{ projectRole.project.name }}</p>
@@ -31,7 +29,7 @@
 <script>
 export default {
   props: {
-    projectRole: Object,
+    projectRole: null,
   },
 };
 </script>
