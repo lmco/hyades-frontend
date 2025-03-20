@@ -75,6 +75,7 @@ export default {
       selectedRole: '',
       availableRoles: [],
       availableProjects: [],
+      user: this.username,
       labelIcon: {
         dataOn: '\u2713',
         dataOff: '\u2715',
@@ -83,7 +84,7 @@ export default {
   },
   methods: {
     createRoleMapping: function () {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/role`;
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.user}/role`;
       this.axios
         .post(url, {
           roleUUID: this.selectedRole,
@@ -112,7 +113,7 @@ export default {
         });
     },
     loadProjects: function () {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_ACL_USER}/${this.username}`;
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_ACL_USER}/${this.user}`;
       this.axios
         .get(url)
         .then((response) => {

@@ -166,7 +166,7 @@ export default {
               };
             },
             created() {
-              this.loadUserRoles();
+              this.loadUserRoles(this.username);
             },
             methods: {
               deleteUser: function () {
@@ -232,7 +232,7 @@ export default {
                   });
               },
               removeRole: function (role) {
-                this.unassignRole(role);
+                this.unassignRole(role, this.username);
               },
               updatePermissionSelection: function (selections) {
                 this.$root.$emit('bv::hide::modal', 'selectPermissionModal');

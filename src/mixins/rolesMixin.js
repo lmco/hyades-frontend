@@ -16,12 +16,9 @@ export default {
       this.refreshTable();
     });
   },
-  created() {
-    this.loadUserRoles();
-  },
   methods: {
-    loadUserRoles: function () {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}/${this.username}/roles`;
+    loadUserRoles: function (username) {
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}/${username}/roles`;
       return this.axios
         .get(url)
         .then((response) => {
@@ -32,8 +29,8 @@ export default {
           this.projectRoles = [];
         });
     },
-    unassignRole: function (projectRole) {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/role`;
+    unassignRole: function (projectRole, username) {
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${username}/role`;
       this.axios
         .delete(url, {
           data: {
