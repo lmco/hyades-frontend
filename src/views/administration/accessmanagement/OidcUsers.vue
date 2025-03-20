@@ -5,10 +5,9 @@
         <b-button
           size="md"
           variant="outline-primary"
-          v-b-modal.createOidcGroupModal
+          v-b-modal.createOidcUserModal
         >
-          <span class="fa fa-plus"></span>
-          {{ $t('admin.create_oidc_group') }}
+          <span class="fa fa-plus"></span> {{ $t('admin.create_user') }}
         </b-button>
       </div>
       <bootstrap-table
@@ -16,9 +15,10 @@
         :columns="columns"
         :data="data"
         :options="options"
-      ></bootstrap-table>
+      >
+      </bootstrap-table>
     </b-card-body>
-    <create-oidc-group-modal v-on:refreshTable="refreshTable" />
+    <create-oidc-user-modal v-on:refreshTable="refreshTable" />
   </b-card>
 </template>
 
@@ -26,13 +26,13 @@
 import xssFilters from 'xss-filters';
 import common from '../../../shared/common';
 import i18n from '../../../i18n';
-import CreateOidcGroupModal from './CreateOidcGroupModal';
+import CreateOidcUserModal from './CreateOidcUserModal';
 import bootstrapTableMixin from '../../../mixins/bootstrapTableMixin';
 import EventBus from '../../../shared/eventbus';
 import ActionableListGroupItem from '../../components/ActionableListGroupItem';
-import permissionsMixin from '../../../mixins/permissionsMixin';
-import BInputGroupFormInput from '../../../forms/BInputGroupFormInput';
 import SelectTeamModal from './SelectTeamModal';
+import SelectPermissionModal from './SelectPermissionModal';
+import permissionsMixin from '../../../mixins/permissionsMixin';
 
 export default {
   props: {
@@ -40,30 +40,50 @@ export default {
   },
   mixins: [bootstrapTableMixin],
   components: {
-    CreateOidcGroupModal,
+    CreateOidcUserModal,
   },
   mounted() {
-    EventBus.$on('admin:oidcgroups:rowUpdate', (index, row) => {
+    EventBus.$on('admin:oidcusers:rowUpdate', (index, row) => {
       this.$refs.table.updateRow({ index: index, row: row });
       this.$refs.table.expandRow(index);
     });
-    EventBus.$on('admin:oidcgroups:rowDeleted', (index, row) => {
+    EventBus.$on('admin:oidcusers:rowDeleted', (index, row) => {
       this.refreshTable();
     });
   },
   beforeDestroy() {
-    EventBus.$off('admin:oidcgroups:rowUpdate');
-    EventBus.$off('admin:oidcgroups:rowDeleted');
+    EventBus.$off('admin:oidcusers:rowUpdate');
+    EventBus.$off('admin:oidcusers:rowDeleted');
   },
   data() {
     return {
       columns: [
         {
-          title: this.$t('admin.oidc_group_name'),
-          field: 'name',
+          title: this.$t('message.username'),
+          field: 'username',
           sortable: false,
           formatter(value, row, index) {
             return xssFilters.inHTMLData(common.valueWithDefault(value, ''));
+          },
+        },
+        {
+          title: this.$t('admin.subject_identifier'),
+          field: 'subjectIdentifier',
+          sortable: false,
+          formatter(value, row, index) {
+            return xssFilters.inHTMLData(common.valueWithDefault(value, ''));
+          },
+        },
+        {
+          title: this.$t('admin.teams'),
+          field: 'teams',
+          sortable: false,
+          formatter(value, row, index) {
+            return value
+              ? xssFilters.inHTMLData(
+                  common.valueWithDefault(value.length, '0'),
+                )
+              : 0;
           },
         },
       ],
@@ -88,79 +108,60 @@ export default {
           return this.vueFormatter({
             i18n,
             template: `
-              <b-row class="expanded-row">
+                <b-row class="expanded-row">
                   <b-col sm="6">
-                    <b-input-group-form-input id="input-oidcgroup-name" :label="$t('admin.oidc_group_name')" input-group-size="mb-3"
-                                              required="true" type="text" v-model="oidcGroup.name" lazy="true" autofocus="true"
-                                              v-debounce:750ms="updateOidcGroup" :debounce-events="'keyup'" />
-                    <b-form-group :label="this.$t('admin.mapped_teams')">
+                    <b-form-group :label="this.$t('admin.team_membership')">
                       <div class="list-group">
-                        <span v-for="mappedTeam in mappedTeams">
-                          <actionable-list-group-item :value="mappedTeam.name" :delete-icon="true" v-on:actionClicked="removeOidcGroupMapping(mappedTeam)"/>
+                        <span v-for="team in teams">
+                          <actionable-list-group-item :value="team.name" :delete-icon="true" v-on:actionClicked="removeTeamMembership(team.uuid)"/>
                         </span>
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectTeamModal')"/>
+                      </div>
+                    </b-form-group>
+                    <b-form-group :label="this.$t('admin.permissions')">
+                      <div class="list-group">
+                        <span v-for="permission in permissions">
+                          <actionable-list-group-item :value="permission.name" :delete-icon="true" v-on:actionClicked="removePermission(permission)"/>
+                        </span>
+                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectPermissionModal')"/>
                       </div>
                     </b-form-group>
                   </b-col>
                   <b-col sm="6">
                     <div style="text-align:right">
-                       <b-button variant="outline-danger" @click="deleteOidcGroup">{{ $t('admin.delete_oidc_group') }}</b-button>
+                       <b-button variant="outline-danger" @click="deleteUser">{{ $t('admin.delete_user') }}</b-button>
                     </div>
                   </b-col>
                   <select-team-modal v-on:selection="updateTeamSelection" />
+                  <select-permission-modal v-on:selection="updatePermissionSelection" />
                 </b-row>
               `,
             mixins: [permissionsMixin],
             components: {
               ActionableListGroupItem,
-              BInputGroupFormInput,
               SelectTeamModal,
+              SelectPermissionModal,
             },
             data() {
               return {
-                oidcGroup: row,
-                mappedTeams: [],
+                oidcUser: row,
+                username: row.username,
+                teams: row.teams,
+                permissions: row.permissions,
               };
             },
             methods: {
-              updateOidcGroup: function () {
-                let url = `${this.$api.BASE_URL}/${this.$api.URL_OIDC_GROUP}`;
+              deleteUser: function () {
+                let url = `${this.$api.BASE_URL}/${this.$api.URL_USER_OIDC}`;
                 this.axios
-                  .post(url, {
-                    uuid: this.oidcGroup.uuid,
-                    name: this.oidcGroup.name,
+                  .delete(url, {
+                    data: {
+                      username: this.username,
+                    },
                   })
                   .then((response) => {
-                    this.team = response.data;
-                    EventBus.$emit(
-                      'admin:oidcgroups:rowUpdate',
-                      index,
-                      this.team,
-                    );
-                    this.$toastr.s(this.$t('message.updated'));
-                  })
-                  .catch((error) => {
-                    this.$toastr.w(this.$t('condition.unsuccessful_action'));
-                  });
-              },
-              deleteOidcGroup: function () {
-                let url = `${this.$api.BASE_URL}/${this.$api.URL_OIDC_GROUP}/${this.oidcGroup.uuid}`;
-                this.axios
-                  .delete(url)
-                  .then((response) => {
-                    EventBus.$emit('admin:oidcgroups:rowDeleted', index);
-                    this.$toastr.s(this.$t('admin.oidc_group_deleted'));
-                  })
-                  .catch((error) => {
-                    this.$toastr.w(this.$t('condition.unsuccessful_action'));
-                  });
-              },
-              getMappedTeams: function () {
-                let url = `${this.$api.BASE_URL}/${this.$api.URL_OIDC_GROUP}/${this.oidcGroup.uuid}/team`;
-                this.axios
-                  .get(url)
-                  .then((response) => {
-                    this.mappedTeams = response.data;
+                    EventBus.$emit('admin:oidcusers:rowDeleted', index);
+                    this.$toastr.s(this.$t('admin.user_deleted'));
                   })
                   .catch((error) => {
                     this.$toastr.w(this.$t('condition.unsuccessful_action'));
@@ -170,43 +171,89 @@ export default {
                 this.$root.$emit('bv::hide::modal', 'selectTeamModal');
                 for (let i = 0; i < selections.length; i++) {
                   let selection = selections[i];
-                  let url = `${this.$api.BASE_URL}/${this.$api.URL_OIDC_MAPPING}`;
+                  let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/membership`;
                   this.axios
-                    .put(url, {
-                      group: this.oidcGroup.uuid,
-                      team: selection.uuid,
+                    .post(url, {
+                      uuid: selection.uuid,
                     })
                     .then((response) => {
-                      this.mappedTeams.push(selection);
-                      this.mappedTeams.sort();
+                      this.syncVariables(response.data);
+                      EventBus.$emit(
+                        'admin:oidcusers:rowUpdate',
+                        index,
+                        this.oidcUser,
+                      );
                       this.$toastr.s(this.$t('message.updated'));
                     })
                     .catch((error) => {
-                      this.$toastr.w(this.$t('condition.unsuccessful_action'));
+                      if (error.response.status === 304) {
+                        //this.$toastr.w(this.$t('condition.unsuccessful_action'));
+                      } else {
+                        this.$toastr.w(
+                          this.$t('condition.unsuccessful_action'),
+                        );
+                      }
                     });
                 }
               },
-              removeOidcGroupMapping: function (team) {
-                let url = `${this.$api.BASE_URL}/${this.$api.URL_OIDC_GROUP}/${this.oidcGroup.uuid}/team/${team.uuid}/mapping`;
+              removeTeamMembership: function (teamUuid) {
+                let url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/membership`;
                 this.axios
-                  .delete(url)
+                  .delete(url, { data: { uuid: teamUuid } })
                   .then((response) => {
-                    let remainingTeams = [];
-                    for (let i = 0; i < this.mappedTeams.length; i++) {
-                      if (this.mappedTeams[i].uuid !== team.uuid) {
-                        remainingTeams.push(this.mappedTeams[i]);
-                      }
-                    }
-                    this.mappedTeams = remainingTeams;
+                    this.syncVariables(response.data);
+                    EventBus.$emit(
+                      'admin:oidcusers:rowUpdate',
+                      index,
+                      this.oidcUser,
+                    );
                     this.$toastr.s(this.$t('message.updated'));
                   })
                   .catch((error) => {
                     this.$toastr.w(this.$t('condition.unsuccessful_action'));
                   });
               },
-            },
-            mounted: function () {
-              this.getMappedTeams();
+              updatePermissionSelection: function (selections) {
+                this.$root.$emit('bv::hide::modal', 'selectPermissionModal');
+                for (let i = 0; i < selections.length; i++) {
+                  let selection = selections[i];
+                  let url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${selection.name}/user/${this.username}`;
+                  this.axios
+                    .post(url)
+                    .then((response) => {
+                      this.syncVariables(response.data);
+                      this.$toastr.s(this.$t('message.updated'));
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      if (error.response.status === 304) {
+                        //this.$toastr.w(this.$t('condition.unsuccessful_action'));
+                      } else {
+                        this.$toastr.w(
+                          this.$t('condition.unsuccessful_action'),
+                        );
+                      }
+                    });
+                }
+              },
+              removePermission: function (permission) {
+                let url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${this.username}`;
+                this.axios
+                  .delete(url)
+                  .then((response) => {
+                    this.syncVariables(response.data);
+                    this.$toastr.s(this.$t('message.updated'));
+                  })
+                  .catch((error) => {
+                    this.$toastr.w(this.$t('condition.unsuccessful_action'));
+                  });
+              },
+              syncVariables: function (oidcUser) {
+                this.oidcUser = oidcUser;
+                this.username = oidcUser.username;
+                this.teams = oidcUser.teams;
+                this.permissions = oidcUser.permissions;
+              },
             },
           });
         },
@@ -216,7 +263,7 @@ export default {
           res.total = xhr.getResponseHeader('X-Total-Count');
           return res;
         },
-        url: `${this.$api.BASE_URL}/${this.$api.URL_OIDC_GROUP}`,
+        url: `${this.$api.BASE_URL}/${this.$api.URL_USER_OIDC}`,
       },
     };
   },
