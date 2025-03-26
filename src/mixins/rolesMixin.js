@@ -9,15 +9,13 @@ export default {
   },
   mounted() {
     EventBus.$on('admin:ldapusers:rowUpdate', (index, row) => {
-      this.$refs.table.updateRow({ index: index, row: row });
-      this.$refs.table.expandRow(index);
+      this.refreshTable();
     });
     EventBus.$on('admin:ldapusers:rowDeleted', (index, row) => {
       this.refreshTable();
     });
     EventBus.$on('admin:oidcusers:rowUpdate', (index, row) => {
-      this.$refs.table.updateRow({ index: index, row: row });
-      this.$refs.table.expandRow(index);
+      this.refreshTable();
     });
     EventBus.$on('admin:oidcusers:rowDeleted', (index, row) => {
       this.refreshTable();
