@@ -36,7 +36,6 @@ import SelectPermissionModal from './SelectPermissionModal';
 import permissionsMixin from '../../../mixins/permissionsMixin';
 import SelectRoleModal from './SelectRoleModal.vue';
 import rolesMixin from '../../../mixins/rolesMixin';
-
 export default {
   props: {
     header: String,
@@ -64,6 +63,14 @@ export default {
         {
           title: this.$t('message.username'),
           field: 'username',
+          sortable: false,
+          formatter(value, row, index) {
+            return xssFilters.inHTMLData(common.valueWithDefault(value, ''));
+          },
+        },
+        {
+          title: this.$t('admin.subject_identifier'),
+          field: 'subjectIdentifier',
           sortable: false,
           formatter(value, row, index) {
             return xssFilters.inHTMLData(common.valueWithDefault(value, ''));
