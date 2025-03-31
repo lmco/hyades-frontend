@@ -181,7 +181,6 @@ export default {
               getUserObjectKey: function () {
                 return "oidcUser"
               },
-
               getUserObject: function () {
                 return this.oidcUser
               },
@@ -196,7 +195,7 @@ export default {
                 this._updateTeamSelection(event, selections)
               },
               removeTeamMembership: function (teamUUID) {
-                const url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.username}/membership`;
+                const url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.oidcUser.username}/membership`;
                 const event = 'admin:oidcusers:rowUpdate'
                 this._removeTeamMembership(url, event, teamUUID)
               },
@@ -209,7 +208,6 @@ export default {
               },
               updatePermissionSelection: function (selections) {
                 this.$root.$emit('bv::hide::modal', 'selectPermissionModal');
-
                 this._updatePermissionSelection(selections)
               },
               removePermission: function (permission) {
