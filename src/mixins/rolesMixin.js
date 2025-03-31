@@ -4,15 +4,20 @@ import EventBus from '../shared/eventbus';
 export default {
   data() {
     return {
-        projectRoles: [Object],
+      projectRoles: [Object],
     };
   },
   mounted() {
     EventBus.$on('admin:ldapusers:rowUpdate', (index, row) => {
-      this.$refs.table.updateRow({ index: index, row: row });
-      this.$refs.table.expandRow(index);
+      this.refreshTable();
     });
     EventBus.$on('admin:ldapusers:rowDeleted', (index, row) => {
+      this.refreshTable();
+    });
+    EventBus.$on('admin:oidcusers:rowUpdate', (index, row) => {
+      this.refreshTable();
+    });
+    EventBus.$on('admin:oidcusers:rowDeleted', (index, row) => {
       this.refreshTable();
     });
   },
@@ -41,7 +46,11 @@ export default {
         .then((response) => {
           this.syncVariables(response.data);
           // Emit an event to update the component
-          this.$root.$emit('admin:ldapusers:rowUpdate', this.ldapUser);
+          if (userType === 'ldap') {
+            this.$root.$emit('admin:ldapusers:rowUpdate', this.ldapUser);
+          } else if (userType === 'oidc') {
+            this.$root.$emit('admin:oidcusers:rowUpdate', this.oidcUser);
+          }
           this.$toastr.s(this.$t('message.updated'));
         })
         .catch((error) => {
