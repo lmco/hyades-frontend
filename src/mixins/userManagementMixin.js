@@ -49,7 +49,7 @@ export default {
         });
     },
 
-    // TODO: ask about batch selections
+    // TODO: implement batch selections when apiserver support is implemented
     _updateTeamSelection: function (updateEvent, selections) {
       const userObj = this.getUserObject()
       const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${userObj.username}/membership`
@@ -135,7 +135,6 @@ export default {
     _updatePermissionSelection: function (selections) {
       const userObj = this.getUserObject()
 
-      // TODO: urls do not differ across ldap, oicd, managed etc, ask jonathan about this before commit
       const request_promises = selections.map(async (selection) => {
         const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${selection.name}/user/${userObj.username}`;
         return await this.axios.post(url);
@@ -153,6 +152,7 @@ export default {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         })
     },
+
     _removePermission: function (permission) {
       const userObj = this.getUserObject()
       const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${userObj.username}`;

@@ -1,26 +1,27 @@
+
 <template>
-  <b-card no-body :header="header">
-    <b-card-body>
-      <div id="customToolbar">
-        <b-button
-          size="md"
-          variant="outline-primary"
-          v-b-modal.createOidcUserModal
+    <b-card no-body :header="header">
+      <b-card-body>
+        <div id="customToolbar">
+          <b-button
+            size="md"
+            variant="outline-primary"
+            v-b-modal.createOidcUserModal
+          >
+            <span class="fa fa-plus"></span> {{ $t('admin.create_user') }}
+          </b-button>
+        </div>
+        <bootstrap-table
+          ref="table"
+          :columns="columns"
+          :data="data"
+          :options="options"
         >
-          <span class="fa fa-plus"></span> {{ $t('admin.create_user') }}
-        </b-button>
-      </div>
-      <bootstrap-table
-        ref="table"
-        :columns="columns"
-        :data="data"
-        :options="options"
-      >
-      </bootstrap-table>
-    </b-card-body>
-    <create-oidc-user-modal v-on:refreshTable="refreshTable" />
-  </b-card>
-</template>
+        </bootstrap-table>
+      </b-card-body>
+      <create-oidc-user-modal v-on:refreshTable="refreshTable" />
+    </b-card>
+  </template>
 
 <script>
 import xssFilters from 'xss-filters';
