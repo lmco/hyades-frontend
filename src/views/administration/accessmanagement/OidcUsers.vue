@@ -30,10 +30,12 @@ import CreateOidcUserModal from './CreateOidcUserModal';
 import bootstrapTableMixin from '../../../mixins/bootstrapTableMixin';
 import EventBus from '../../../shared/eventbus';
 import ActionableListGroupItem from '../../components/ActionableListGroupItem';
+import ProjectRoleListGroupItem from './ProjectRoleListGroupItem.vue';
 import SelectTeamModal from './SelectTeamModal';
 import SelectPermissionModal from './SelectPermissionModal';
 import permissionsMixin from '../../../mixins/permissionsMixin';
-
+import SelectRoleModal from './SelectRoleModal.vue';
+import rolesMixin from '../../../mixins/rolesMixin';
 export default {
   props: {
     header: String,
@@ -61,6 +63,14 @@ export default {
         {
           title: this.$t('message.username'),
           field: 'username',
+          sortable: false,
+          formatter(value, row, index) {
+            return xssFilters.inHTMLData(common.valueWithDefault(value, ''));
+          },
+        },
+        {
+          title: this.$t('admin.subject_identifier'),
+          field: 'subjectIdentifier',
           sortable: false,
           formatter(value, row, index) {
             return xssFilters.inHTMLData(common.valueWithDefault(value, ''));
@@ -118,6 +128,14 @@ export default {
                         <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectTeamModal')"/>
                       </div>
                     </b-form-group>
+                    <b-form-group :label="this.$t('admin.roles')">
+                      <div class="list-group">
+                        <span v-for="projectRole in projectRoles">
+                          <project-role-list-group-item :projectRole="projectRole" :delete-icon="true" v-on:removeClicked="removeRole(projectRole)"/>
+                        </span>
+                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectRoleModal')"/>
+                      </div>
+                    </b-form-group>
                     <b-form-group :label="this.$t('admin.permissions')">
                       <div class="list-group">
                         <span v-for="permission in permissions">
@@ -132,13 +150,16 @@ export default {
                        <b-button variant="outline-danger" @click="deleteUser">{{ $t('admin.delete_user') }}</b-button>
                     </div>
                   </b-col>
+                  <select-role-modal v-on:selection="updateRoleSelection" :username="username" />
                   <select-team-modal v-on:selection="updateTeamSelection" />
                   <select-permission-modal v-on:selection="updatePermissionSelection" />
                 </b-row>
               `,
-            mixins: [permissionsMixin],
+            mixins: [permissionsMixin, rolesMixin],
             components: {
               ActionableListGroupItem,
+              ProjectRoleListGroupItem,
+              SelectRoleModal,
               SelectTeamModal,
               SelectPermissionModal,
             },
@@ -148,7 +169,11 @@ export default {
                 username: row.username,
                 teams: row.teams,
                 permissions: row.permissions,
+                projectRoles: [],
               };
+            },
+            created() {
+              this.loadUserRoles(this.username);
             },
             methods: {
               deleteUser: function () {
@@ -213,6 +238,9 @@ export default {
                     this.$toastr.w(this.$t('condition.unsuccessful_action'));
                   });
               },
+              removeRole: function (role) {
+                this.unassignRole(role, this.username);
+              },
               updatePermissionSelection: function (selections) {
                 this.$root.$emit('bv::hide::modal', 'selectPermissionModal');
                 for (let i = 0; i < selections.length; i++) {
@@ -252,7 +280,14 @@ export default {
                 this.oidcUser = oidcUser;
                 this.username = oidcUser.username;
                 this.teams = oidcUser.teams;
+                this.roles = oidcUser.roles;
                 this.permissions = oidcUser.permissions;
+	      },
+              updateRoleSelection: function () {
+                this.$root.$emit('bv::hide::modal', 'selectRoleModal');
+                this.$toastr.s(this.$t('message.updated'));
+                this.loadUserRoles();
+                this.refreshTable();
               },
             },
           });
