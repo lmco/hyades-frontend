@@ -1,28 +1,12 @@
 <template>
-  <b-modal
-    id="selectPermissionModal"
-    size="lg"
-    hide-header-close
-    no-stacking
-    :title="$t('admin.select_permission')"
-  >
-    <bootstrap-table
-      ref="table"
-      :columns="columns"
-      :data="data"
-      :options="options"
-    >
+  <b-modal id="selectPermissionModal" size="lg" hide-header-close no-stacking :title="$t('admin.select_permission')">
+    <bootstrap-table ref="table" :columns="columns" :data="data" :options="options">
     </bootstrap-table>
     <template v-slot:modal-footer="{ cancel }">
       <b-button size="md" variant="secondary" @click="cancel()">{{
         $t('message.cancel')
-      }}</b-button>
-      <b-button
-        size="md"
-        variant="primary"
-        @click="$emit('selection', $refs.table.getSelections())"
-        >{{ $t('message.select') }}</b-button
-      >
+        }}</b-button>
+      <b-button size="md" variant="primary" @click="handleSelection">{{ $t('message.select') }}</b-button>
     </template>
   </b-modal>
 </template>
@@ -78,5 +62,12 @@ export default {
       },
     };
   },
+  methods: {
+    handleSelection: function () {
+      const selections = this.$refs.table.getSelections();
+      this.$root.$emit("bv::hide::modal", this.$children[0].id)
+      this.$emit('selection', selections)
+    }
+  }
 };
 </script>
