@@ -246,7 +246,8 @@ export default {
               },
               deleteUser: function () {
                 const url = `${this.$api.BASE_URL}/${this.$api.URL_USER_MANAGED}`;
-                this._deleteUser(url)
+                const event = 'admin:managedusers:rowDeleted'
+                this._deleteUser(url, event)
               },
               updateTeamSelection: function (selections) {
                 this.$root.$emit('bv::hide::modal', 'selectTeamModal');
