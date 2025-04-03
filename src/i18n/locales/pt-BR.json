@@ -173,6 +173,7 @@
     "namespace_regex_desc": "Especifica uma expressão regular que identifica componentes internos por namespace. O namespace é frequentemente referido como 'grupo', 'organização' ou 'fornecedor' em vários ecossistemas.",
     "national_vulnerability_database": "Banco de dados nacional de vulnerabilidades",
     "nixpkgs": "Nixpkgs",
+    "no_unassigned_projects": "Nenhum projeto não atribuído",
     "notification_level": "Nível de notificação",
     "notifications": "Notificações",
     "npm": "NPM",

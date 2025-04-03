@@ -173,6 +173,7 @@
     "namespace_regex_desc": "名前空間によって内部コンポーネントを識別する正規表現を指定します。名前空間は、エコシステムによっては「グループ」、「組織」、または「ベンダー」と呼ばれていることがあります。",
     "national_vulnerability_database": "National Vulnerability Database",
     "nixpkgs": "Nixpkgs",
+    "no_unassigned_projects": "割り当てられていないプロジェクトはありません",
     "notification_level": "通知レベル",
     "notifications": "通知",
     "npm": "NPM",

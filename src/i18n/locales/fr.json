@@ -173,6 +173,7 @@
     "namespace_regex_desc": "Spécifie une expression régulière qui identifie les composants internes par espace de noms. L'espace de noms est souvent appelé « groupe », « organisation » ou « fournisseur » dans divers écosystèmes.",
     "national_vulnerability_database": "National Vulnerability Database (NVD)",
     "nixpkgs": "Nixpkgs",
+    "no_unassigned_projects": "Pas de projets non attribués",
     "notification_level": "Niveau d'alerte",
     "notifications": "Notifications",
     "npm": "NPM",

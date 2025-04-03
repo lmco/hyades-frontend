@@ -173,6 +173,7 @@
     "namespace_regex_desc": "Specifica un'espressione regolare che identifica i componenti interni in base allo spazio dei nomi. Lo spazio dei nomi viene spesso definito \"gruppo\", \"organizzazione\" o \"fornitore\" in vari ecosistemi.",
     "national_vulnerability_database": "Database nazionale delle vulnerabilità",
     "nixpkgs": "Nixpkgs",
+    "no_unassigned_projects": "Nessun progetto non assegnato",
     "notification_level": "Livello di notifica",
     "notifications": "Notifiche",
     "npm": "NPM",

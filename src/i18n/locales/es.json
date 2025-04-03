@@ -173,6 +173,7 @@
     "namespace_regex_desc": "Especifica una expresión regular que identifica los componentes internos por espacio de nombres. El espacio de nombres a menudo se denomina \"grupo\", \"organización\" o \"proveedor\" en varios ecosistemas.",
     "national_vulnerability_database": "Base de datos nacional de vulnerabilidad",
     "nixpkgs": "Nixpkgs",
+    "no_unassigned_projects": "No hay proyectos no asignados",
     "notification_level": "Nivel de notificación",
     "notifications": "Notificaciones",
     "npm": "MNP",

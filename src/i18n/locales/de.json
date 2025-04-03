@@ -173,6 +173,7 @@
     "namespace_regex_desc": "Gibt einen regulären Ausdruck an, der interne Komponenten nach Namespace identifiziert. Der Namespace wird in verschiedenen Ökosystemen häufig als „Gruppe“, „Organisation“ oder „Anbieter“ bezeichnet.",
     "national_vulnerability_database": "National Vulnerability Database",
     "nixpkgs": "Nixpkgs",
+    "no_unassigned_projects": "Keine nicht zugewiesenen Projekte",
     "notification_level": "Level",
     "notifications": "Benachrichtigungen",
     "npm": "NPM",

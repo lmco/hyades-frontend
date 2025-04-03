@@ -173,6 +173,7 @@
     "namespace_regex_desc": "Określa wyrażenie regularne identyfikujące komponenty wewnętrzne według przestrzeni nazw. W różnych ekosystemach przestrzeń nazw jest często określana jako „grupa”, „organizacja” lub „sprzedawca”.",
     "national_vulnerability_database": "Krajowa baza danych o podatnościach",
     "nixpkgs": "Nixpkgs",
+    "no_unassigned_projects": "Żadnych nie przypisanych projektów",
     "notification_level": "Poziom powiadomień",
     "notifications": "Powiadomienia",
     "npm": "NPM",

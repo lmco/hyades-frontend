@@ -2,6 +2,7 @@
   <b-modal
     id="selectRoleModal"
     @hide="resetValues()"
+    @show="loadProjects()"
     size="md"
     hide-header-close
     no-stacking
@@ -42,11 +43,9 @@
         $t('message.close')
       }}</b-button>
       <!-- emit selected role object back to parent -->
-      <b-button
-      size="md"
-      variant="primary"
-      @click="handleSelection"
-      >{{$t('message.assign')}}</b-button>
+      <b-button size="md" variant="primary" @click="handleSelection">{{
+        $t('message.assign')
+      }}</b-button>
     </template>
   </b-modal>
 </template>
@@ -61,7 +60,6 @@ export default {
   },
   mounted() {
     this.loadAvailableRoles();
-    this.loadProjects();
   },
   props: {
     username: String,
@@ -82,14 +80,17 @@ export default {
     };
   },
   methods: {
-    handleSelection: function() {
-      if(!this.selectedRole || !this.selectedProject) {
+    handleSelection: function () {
+      if (!this.selectedRole || !this.selectedProject) {
         return;
       }
 
-      const selection = {role: this.selectedRole, project: this.selectedProject}
-      this.$root.$emit("bv::hide::modal", this.$children[0].id) //or just 'selectRoleModal'
-      this.$emit('selection', selection)
+      const selection = {
+        role: this.selectedRole,
+        project: this.selectedProject,
+      };
+      this.$root.$emit('bv::hide::modal', this.$children[0].id); //or just 'selectRoleModal'
+      this.$emit('selection', selection);
     },
     loadAvailableRoles: function () {
       let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`;
@@ -102,16 +103,30 @@ export default {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         });
     },
-    loadProjects: function () {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_ACL_USER}/${this.user}`;
-      this.axios
-        .get(url)
-        .then((response) => {
+    loadProjects: async function () {
+      try {
+        const response = await this.axios.get(
+          `${this.$api.BASE_URL}/${this.$api.URL_ACL_USER}/${this.user}`,
+        );
+
+        if (response.status === 204) {
+          this.availableProjects = [
+            {
+              uuid: null,
+              name: this.$t('admin.no_unassigned_projects'),
+            },
+          ];
+          this.selectedProject = this.$t('admin.no_unassigned_projects');
+          this.selectedRole = null;
+          console.log('No projects available.');
+        } else if (response.status === 200 && Array.isArray(response.data)) {
           this.availableProjects = response.data;
-        })
-        .catch((error) => {
+        } else {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
-        });
+        }
+      } catch (error) {
+        this.$toastr.w(this.$t('condition.unsuccessful_action'));
+      }
     },
     resetValues: function () {
       this.selectedProject = this.initialProject;
