@@ -1,27 +1,26 @@
-
 <template>
-    <b-card no-body :header="header">
-      <b-card-body>
-        <div id="customToolbar">
-          <b-button
-            size="md"
-            variant="outline-primary"
-            v-b-modal.createOidcUserModal
-          >
-            <span class="fa fa-plus"></span> {{ $t('admin.create_user') }}
-          </b-button>
-        </div>
-        <bootstrap-table
-          ref="table"
-          :columns="columns"
-          :data="data"
-          :options="options"
+  <b-card no-body :header="header">
+    <b-card-body>
+      <div id="customToolbar">
+        <b-button
+          size="md"
+          variant="outline-primary"
+          v-b-modal.createOidcUserModal
         >
-        </bootstrap-table>
-      </b-card-body>
-      <create-oidc-user-modal v-on:refreshTable="refreshTable" />
-    </b-card>
-  </template>
+          <span class="fa fa-plus"></span> {{ $t('admin.create_user') }}
+        </b-button>
+      </div>
+      <bootstrap-table
+        ref="table"
+        :columns="columns"
+        :data="data"
+        :options="options"
+      >
+      </bootstrap-table>
+    </b-card-body>
+    <create-oidc-user-modal v-on:refreshTable="refreshTable" />
+  </b-card>
+</template>
 
 <script>
 import xssFilters from 'xss-filters';
@@ -167,7 +166,8 @@ export default {
             },
             data() {
               return {
-                row, index,
+                row,
+                index,
                 oidcUser: row,
                 username: row.username,
                 teams: row.teams,
@@ -180,25 +180,25 @@ export default {
             },
             methods: {
               getUserObjectKey: function () {
-                return "oidcUser"
+                return 'oidcUser';
               },
               getUserObject: function () {
-                return this.oidcUser
+                return this.oidcUser;
               },
               deleteUser: function () {
                 const url = `${this.$api.BASE_URL}/${this.$api.URL_USER_OIDC}`;
                 const event = 'admin:oidcusers:rowDeleted';
-                this._deleteUser(url, event)
+                this._deleteUser(url, event);
               },
               updateTeamSelection: function (selections) {
                 this.$root.$emit('bv::hide::modal', 'selectTeamModal');
                 const event = 'admin:oidcusers:rowUpdate';
-                this._updateTeamSelection(event, selections)
+                this._updateTeamSelection(event, selections);
               },
               removeTeamMembership: function (teamUUID) {
                 const url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.oidcUser.username}/membership`;
-                const event = 'admin:oidcusers:rowUpdate'
-                this._removeTeamMembership(url, event, teamUUID)
+                const event = 'admin:oidcusers:rowUpdate';
+                this._removeTeamMembership(url, event, teamUUID);
               },
               updateRoleSelection: function (selection) {
                 const url = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${this.oidcUser.username}/role`;
@@ -209,14 +209,14 @@ export default {
               },
               updatePermissionSelection: function (selections) {
                 this.$root.$emit('bv::hide::modal', 'selectPermissionModal');
-                this._updatePermissionSelection(selections)
+                this._updatePermissionSelection(selections);
               },
               removePermission: function (permission) {
-                this._removePermission(permission)
+                this._removePermission(permission);
               },
               syncVariables: function (userObj) {
-                Object.assign(this.oidcUser, userObj)
-                this.loadUserRoles(this.oidcUser.username)
+                Object.assign(this.oidcUser, userObj);
+                this.loadUserRoles(this.oidcUser.username);
               },
             },
           });
