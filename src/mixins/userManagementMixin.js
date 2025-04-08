@@ -9,7 +9,6 @@ export default {
     }
   },
   methods: {
-    // this was done to keep the flow of the project. Theres definitely a better way but it work
     getUserObjectKey: function () {
       throw new Error(
         'getUserObjectKey function must be implemented to use "userManagementMixin".',
