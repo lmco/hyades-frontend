@@ -17,7 +17,7 @@ export default {
 
     getUserObject: function () {
       throw new Error(
-        'getUserObjectKey function must be implemented to use "userManagementMixin".',
+        'getUserObject function must be implemented to use "userManagementMixin".',
       );
     },
 
@@ -44,7 +44,7 @@ export default {
             username: userObj.username,
           },
         })
-        .then((response) => {
+        .then(() => {
           EventBus.$emit(updateEvent, this.index);
           this.$toastr.s(this.$t('admin.user_deleted'));
         })
@@ -71,7 +71,7 @@ export default {
 
       // asynchronously process requests
       Promise.all(request_promises)
-        .then((_) => {
+        .then(() => {
           this.syncVariables({ teams: selections });
 
           //eg ("admin:ldapusers:rowUpdate", index, this.ldapUser)
@@ -132,23 +132,45 @@ export default {
           this.syncVariables(response.data);
           this.$toastr.s(this.$t('message.updated'));
         })
-        .catch((error) => {
+        .catch(() => {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         });
     },
-    _updatePermissionSelection: function (selections) {
+    // TODO: update once batch operations are implemented, Account for 304
+    _updatePermissionSelection: async function (selections) {
       const userObj = this.getUserObject();
 
-      const request_promises = selections.map(async (selection) => {
-        const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${selection.name}/user/${userObj.username}`;
+      const currentPermissions = userObj.permissions;
+      const newPermissions = selections; // could be more or less selected
+
+      // relative complement
+      // add = (newPermissions - currentPermissions); remove = (currentPermissions - newPermissions),
+      const permissionsToAdd = newPermissions.filter(
+        (newPerm) =>
+          !currentPermissions.some(
+            (currentPerm) => currentPerm.name === newPerm.name,
+          ),
+      );
+      const permissionsToRemove = currentPermissions.filter(
+        (currentPerm) =>
+          !newPermissions.some((newPerm) => newPerm.name === currentPerm.name),
+      );
+
+      const mappedAdd = permissionsToAdd.map(async (permission) => {
+        const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${userObj.username}`;
         return await this.axios.post(url);
+      });
+      const mappedRemove = permissionsToRemove.map(async (permission) => {
+        const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${userObj.username}`;
+        // return await this._removePermission(permission);
+        return await this.axios.delete(url);
       });
 
       // response data isn't reliable as promises can resolve too fast and at different times
-      Promise.all(request_promises)
+      return Promise.all([mappedAdd, mappedRemove])
         .then(() => {
           // sync variables from selections to avoid missing permissions
-          this.syncVariables({ permissions: selections });
+          this.syncVariables({ permissions: newPermissions });
           this.$toastr.s(this.$t('message.updated'));
         })
         .catch((error) => {
@@ -157,10 +179,10 @@ export default {
         });
     },
 
-    _removePermission: function (permission) {
+    _removePermission: async function (permission) {
       const userObj = this.getUserObject();
       const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${userObj.username}`;
-      this.axios
+      return this.axios
         .delete(url)
         .then((response) => {
           this.syncVariables(response.data);

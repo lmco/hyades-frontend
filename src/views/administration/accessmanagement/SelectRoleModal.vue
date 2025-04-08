@@ -93,13 +93,14 @@ export default {
       this.$emit('selection', selection);
     },
     loadAvailableRoles: function () {
-      let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`;
+      const url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`;
       this.axios
         .get(url)
         .then((response) => {
           this.availableRoles = response.data;
         })
         .catch((error) => {
+          console.error(error);
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         });
     },

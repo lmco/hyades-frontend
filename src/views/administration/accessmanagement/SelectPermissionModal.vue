@@ -1,33 +1,47 @@
 <template>
-  <b-modal id="selectPermissionModal" size="lg" hide-header-close no-stacking :title="$t('admin.select_permission')">
-    <bootstrap-table ref="table" :columns="columns" :data="data" :options="options">
+  <b-modal
+    id="selectPermissionModal"
+    size="lg"
+    hide-header-close
+    no-stacking
+    :title="$t('admin.select_permission')"
+  >
+    <bootstrap-table
+      ref="table"
+      :columns="columns"
+      :data="data"
+      :options="options"
+    >
     </bootstrap-table>
     <template v-slot:modal-footer="{ cancel }">
       <b-button size="md" variant="secondary" @click="cancel()">{{
         $t('message.cancel')
-        }}</b-button>
-      <b-button size="md" variant="primary" @click="handleSelection">{{ $t('message.select') }}</b-button>
+      }}</b-button>
+      <b-button size="md" variant="primary" @click="handleSelection">{{
+        $t('message.select')
+      }}</b-button>
     </template>
   </b-modal>
 </template>
 
 <script>
 import xssFilters from 'xss-filters';
-import permissionsMixin from '../../../mixins/permissionsMixin';
 import common from '../../../shared/common';
 
 export default {
-  mixins: [permissionsMixin],
+  mixins: [],
+  props: {
+    currentPermissions: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
-      labelIcon: {
-        dataOn: '\u2713',
-        dataOff: '\u2715',
-      },
       columns: [
         {
           field: 'state',
-          checkbox: true,
+          checkbox: true, // Enable checkboxes
           align: 'center',
         },
         {
@@ -39,7 +53,7 @@ export default {
           },
         },
       ],
-      data: [],
+      data: [], // retrieved list of addable permissions
       options: {
         search: true,
         showColumns: true,
@@ -59,15 +73,26 @@ export default {
           return res;
         },
         url: `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}`,
+        // must use function arrow notation to access 'this'
+        onLoadSuccess: () => {
+          // when the addable permissions load
+          const mappedPermissions = this.currentPermissions.map(
+            (perm) => perm.name,
+          );
+          this.$refs.table.checkBy({
+            field: 'name',
+            values: mappedPermissions,
+          });
+        },
       },
     };
   },
   methods: {
     handleSelection: function () {
       const selections = this.$refs.table.getSelections();
-      this.$root.$emit("bv::hide::modal", this.$children[0].id)
-      this.$emit('selection', selections)
-    }
-  }
+      this.$root.$emit('bv::hide::modal', this.$children[0].id);
+      this.$emit('selection', selections);
+    },
+  },
 };
 </script>

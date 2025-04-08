@@ -51,7 +51,10 @@ export default {
   },
   mounted() {
     EventBus.$on('admin:managedusers:rowUpdate', (index, row) => {
-      this.$refs.table.updateRow({ index: index, row: row });
+      this.$refs.table.updateRow({
+        index: index,
+        row: row,
+      });
       this.$refs.table.expandRow(index);
     });
     EventBus.$on('admin:managedusers:rowDeleted', (index, row) => {
@@ -146,7 +149,7 @@ export default {
                         <span v-for="permission in managedUser.permissions">
                           <actionable-list-group-item :tooltip="$t('admin.remove_permission')" :value="permission.name" :delete-icon="true" v-on:actionClicked="removePermission(permission)"/>
                         </span>
-                        <actionable-list-group-item :add-icon="true" v-on:actionClicked="$root.$emit('bv::show::modal', 'selectPermissionModal')"/>
+                        <actionable-list-group-item :add-icon="true"  v-on:actionClicked="openPermissionModal"/>
                       </div>
                     </b-form-group>
                   </b-col>
@@ -169,7 +172,7 @@ export default {
                   </b-col>
                   <select-team-modal v-on:selection="updateTeamSelection" />
                   <select-role-modal v-on:selection="updateRoleSelection" :username="username" />
-                  <select-permission-modal v-on:selection="updatePermissionSelection" />
+                  <select-permission-modal :currentPermissions="managedUser.permissions" v-on:selection="updatePermissionSelection" />
                   <change-password-modal :managed-user="managedUser" />
                 </b-row>
               `,
@@ -225,6 +228,9 @@ export default {
               },
               getUserObject: function () {
                 return this.managedUser;
+              },
+              openPermissionModal() {
+                this.$root.$emit('bv::show::modal', 'selectPermissionModal');
               },
               updateUser: function () {
                 const url = `${this.$api.BASE_URL}/${this.$api.URL_USER_MANAGED}`;
