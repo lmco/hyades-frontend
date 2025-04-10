@@ -136,7 +136,7 @@
     "integration_defectdojo_enable": "DefectDojo統合を有効にする",
     "integration_defectdojo_reimport_enable": "再インポートを有効にする",
     "integration_fortify_ssc_enable": "Fortify SSC統合を有効にする",
-    "integration_gitlab_enable": "GitLabプロジェクト同期統合を有効にします",
+    "gitlab_sync_enable": "GitLabプロジェクト同期を有効にする",
     "integration_kenna_connector_id": "コネクタID",
     "integration_kenna_enable": "Kenna Security統合を有効にする",
     "integrations": "統合",

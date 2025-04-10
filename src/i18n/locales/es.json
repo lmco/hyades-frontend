@@ -136,7 +136,7 @@
     "integration_defectdojo_enable": "Habilitar la integración de DefectDojo",
     "integration_defectdojo_reimport_enable": "Habilitar reimportación",
     "integration_fortify_ssc_enable": "Habilite la integración de Fortify SSC",
-    "integration_gitlab_enable": "Habilitar la integración de sincronización del proyecto GitLab",
+    "gitlab_sync_enable": "Habilitar la sincronización de GitLab",
     "integration_kenna_connector_id": "ID del conector",
     "integration_kenna_enable": "Habilitar la integración de Kenna Security",
     "integrations": "Integraciones",
