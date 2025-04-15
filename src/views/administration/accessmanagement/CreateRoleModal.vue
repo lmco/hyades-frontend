@@ -4,7 +4,6 @@
     size="md"
     @hide="resetValues()"
     hide-header-close
-    no-stacking
     :title="$t('admin.create_role')"
   >
     <b-input-group-form-input
@@ -100,7 +99,6 @@ export default {
       this.$root.$emit('bv::show::modal', 'selectPermissionModal');
     },
     updatePermissionSelection(selections) {
-      this.$root.$emit('bv::hide::modal', 'selectPermissionModal');
       for (let i = 0; i < selections.length; i++) {
         let selection = selections[i];
         this.permissions.push(selection);

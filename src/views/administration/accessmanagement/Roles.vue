@@ -47,6 +47,7 @@ export default {
   components: {
     cSwitch,
     CreateRoleModal,
+    SelectPermissionModal,
   },
   mounted() {
     EventBus.$on('admin:roles:rowUpdate', (index, row) => {
