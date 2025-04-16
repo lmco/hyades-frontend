@@ -77,6 +77,7 @@ import OidcGroups from './accessmanagement/OidcGroups';
 import OidcUsers from './accessmanagement/OidcUsers';
 import Permissions from './accessmanagement/Permissions';
 import PortfolioAccessControl from './accessmanagement/PortfolioAccessControl';
+import Roles from './accessmanagement/Roles';
 import Teams from './accessmanagement/Teams';
 
 export default {
@@ -124,6 +125,7 @@ export default {
     ManagedUsers,
     OidcUsers,
     OidcGroups,
+    Roles,
     Teams,
     Permissions,
     PortfolioAccessControl,

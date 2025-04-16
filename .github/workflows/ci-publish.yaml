@@ -43,7 +43,7 @@ jobs:
       security-events: write # Required to upload trivy's SARIF output
     secrets:
       registry-0-usr: ${{ github.repository_owner }}
-      registry-0-psw: ${{ secrets.GITHUB_TOKEN }}
+      registry-0-psw: ${{ github.repository_owner == 'DependencyTrack' && secrets.BOT_IMAGE_PUSH_TOKEN || secrets.GITHUB_TOKEN }}
 
   update-github-release:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v4.2.1
         with:
           name: assembled-frontend
 
