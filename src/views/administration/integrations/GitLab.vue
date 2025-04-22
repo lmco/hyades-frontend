@@ -94,6 +94,7 @@ export default {
       includeArchived: false,
       topics: [],
       newTopic: '',
+      isInitialized: false,
     };
   },
   methods: {
@@ -148,7 +149,9 @@ export default {
   },
   watch: {
     isGitlabEnabled() {
-      this.setGitlabState();
+      if (this.isInitialized) {
+        this.setGitlabState();
+      }
     },
   },
   created() {
@@ -182,6 +185,7 @@ export default {
       if (configItemstopics.length > 0) {
         this.topics = JSON.parse(configItemstopics[0].propertyValue);
       }
+      this.isInitialized = true;
     });
   },
 };
