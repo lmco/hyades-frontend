@@ -39,7 +39,7 @@
       <b-button size="md" variant="secondary" @click="cancel()">
         {{ $t('message.close') }}
       </b-button>
-      <b-button size="md" variant="primary" @click="createUser()">
+      <b-button size="md" variant="primary" @click="createRole()" :disabled="!name">
         {{ $t('message.create') }}
       </b-button>
     </template>
@@ -68,13 +68,14 @@ export default {
     };
   },
   methods: {
-    createUser() {
+    createRole() {
       let url = `${this.$api.BASE_URL}/${this.$api.URL_ROLE}`;
+      const requestBody = {
+        name: this.name,
+        permissions: this.permissions.map((permission) => permission.name),
+      };
       this.axios
-        .put(url, {
-          name: this.name,
-          permissions: this.permissions,
-        })
+        .put(url, requestBody)
         .then((response) => {
           this.$emit('refreshTable');
           this.$toastr.s(this.$t('admin.role_created'));
@@ -99,10 +100,7 @@ export default {
       this.$root.$emit('bv::show::modal', 'selectPermissionModal');
     },
     updatePermissionSelection(selections) {
-      for (let i = 0; i < selections.length; i++) {
-        let selection = selections[i];
-        this.permissions.push(selection);
-      }
+      this.permissions = selections;
     },
   },
 };
