@@ -83,8 +83,7 @@ const FortifySsc = () =>
   import('@/views/administration/integrations/FortifySsc');
 const DefectDojo = () =>
   import('@/views/administration/integrations/DefectDojo');
-const GitLabProjectSync = () =>
-  import('@/views/administration/integrations/GitLabProjectSync');
+const GitLab = () => import('@/views/administration/integrations/GitLab');
 const KennaSecurity = () =>
   import('@/views/administration/integrations/KennaSecurity');
 
@@ -96,6 +95,7 @@ const OidcUsers = () =>
   import('@/views/administration/accessmanagement/OidcUsers');
 const OidcGroups = () =>
   import('@/views/administration/accessmanagement/OidcGroups');
+const Roles = () => import('@/views/administration/accessmanagement/Roles');
 const Teams = () => import('@/views/administration/accessmanagement/Teams');
 const Permissions = () =>
   import('@/views/administration/accessmanagement/Permissions');
@@ -992,8 +992,8 @@ function configRoutes() {
               },
             },
             {
-              path: 'integrations/gitlabprojectsync',
-              component: GitLabProjectSync,
+              path: 'integrations/gitlab',
+              component: GitLab,
               meta: {
                 title: i18n.t('message.administration'),
                 i18n: 'message.administration',
@@ -1080,6 +1080,23 @@ function configRoutes() {
             {
               path: 'accessManagement/oidcGroups',
               component: OidcGroups,
+              meta: {
+                title: i18n.t('message.administration'),
+                i18n: 'message.administration',
+                sectionPath: '/admin',
+                sectionName: 'Admin',
+                permissions: [
+                  'ACCESS_MANAGEMENT',
+                  'ACCESS_MANAGEMENT_CREATE',
+                  'ACCESS_MANAGEMENT_READ',
+                  'ACCESS_MANAGEMENT_UPDATE',
+                  'ACCESS_MANAGEMENT_DELETE',
+                ],
+              },
+            },
+            {
+              path: 'accessManagement/roles',
+              component: Roles,
               meta: {
                 title: i18n.t('message.administration'),
                 i18n: 'message.administration',

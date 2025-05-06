@@ -68,7 +68,7 @@ import Templates from './notifications/Templates';
 // Integration plugins
 import DefectDojo from './integrations/DefectDojo';
 import FortifySsc from './integrations/FortifySsc';
-import GitLabProjectSync from './integrations/GitLabProjectSync';
+import GitLab from './integrations/GitLab';
 import KennaSecurity from './integrations/KennaSecurity';
 // Access Management plugins
 import LdapUsers from './accessmanagement/LdapUsers';
@@ -77,6 +77,7 @@ import OidcGroups from './accessmanagement/OidcGroups';
 import OidcUsers from './accessmanagement/OidcUsers';
 import Permissions from './accessmanagement/Permissions';
 import PortfolioAccessControl from './accessmanagement/PortfolioAccessControl';
+import Roles from './accessmanagement/Roles';
 import Teams from './accessmanagement/Teams';
 
 export default {
@@ -105,7 +106,7 @@ export default {
     Composer,
     Gem,
     GitHub,
-    GitLabProjectSync,
+    GitLab,
     GoModules,
     Hackage,
     Hex,
@@ -124,6 +125,7 @@ export default {
     ManagedUsers,
     OidcUsers,
     OidcGroups,
+    Roles,
     Teams,
     Permissions,
     PortfolioAccessControl,

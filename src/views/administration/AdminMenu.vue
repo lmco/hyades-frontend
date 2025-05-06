@@ -330,9 +330,9 @@ export default {
               route: 'integrations/defectDojo',
             },
             {
-              component: 'GitlabProjectSync',
-              name: this.$t('admin.gitlab_project_sync'),
-              route: 'integrations/gitlabProjectSync',
+              component: 'Gitlab',
+              name: this.$t('admin.gitlab'),
+              route: 'integrations/gitlab',
             },
             {
               component: 'FortifySsc',
@@ -381,6 +381,11 @@ export default {
               component: 'OidcGroups',
               name: this.$t('admin.oidc_groups'),
               route: 'accessManagement/oidcGroups',
+            },
+            {
+              component: 'Roles',
+              name: this.$t('admin.roles'),
+              route: 'accessManagement/roles',
             },
             {
               component: 'Teams',

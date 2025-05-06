@@ -2,12 +2,12 @@
   <b-card no-body :header="header">
     <b-card-body>
       <c-switch
-        id="enabled"
+        id="isGitlabEnabled"
         color="primary"
-        v-model="enabled"
+        v-model="isGitlabEnabled"
         label
         v-bind="labelIcon"
-      />{{ $t('admin.integration_gitlab_enable') }}
+      />{{ $t('admin.gitlab_integration_enable') }}
       <br />
       <c-switch
         id="includeArchived"
@@ -15,8 +15,25 @@
         v-model="includeArchived"
         label
         v-bind="labelIcon"
-      />{{ $t('admin.include_archived_projects') }}
-      <br />
+      />{{ $t('admin.include_archived_projects') }} <br /><br />
+      <b-validated-input-group-form-input
+        id="gitlab-app-id"
+        :label="$t('admin.gitlab_application_id')"
+        input-group-size="mb-3"
+        rules="required"
+        type="password"
+        v-model="gitlabAppId"
+        lazy="true"
+      />
+      <b-validated-input-group-form-input
+        id="gitlab-url"
+        :label="$t('admin.gitlab_url')"
+        input-group-size="mb-3"
+        rules="required"
+        type="url"
+        v-model="gitlabUrl"
+        lazy="true"
+      />
     </b-card-body>
     <b-card-footer>
       <b-row>
@@ -71,10 +88,12 @@
     </b-card-footer>
   </b-card>
 </template>
+
 <script>
 import { Switch as cSwitch } from '@coreui/vue';
-// eslint-disable-next-line no-unused-vars
-import axios from 'axios'; // Import axios
+
+import BValidatedInputGroupFormInput from '../../../forms/BValidatedInputGroupFormInput';
+import axios from 'axios';
 import common from '../../../shared/common';
 import configPropertyMixin from '../mixins/configPropertyMixin';
 import ActionableListGroupItem from '../../components/ActionableListGroupItem';
@@ -87,13 +106,17 @@ export default {
   components: {
     cSwitch,
     ActionableListGroupItem,
+    BValidatedInputGroupFormInput,
   },
   data() {
     return {
-      enabled: false,
+      isGitlabEnabled: false,
       includeArchived: false,
+      gitlabAppId: '',
+      gitlabUrl: '',
       topics: [],
       newTopic: '',
+      isInitialized: false,
     };
   },
   methods: {
@@ -119,11 +142,6 @@ export default {
         this.updateConfigProperties([
           {
             groupName: 'integrations',
-            propertyName: 'gitlab.enabled',
-            propertyValue: this.enabled,
-          },
-          {
-            groupName: 'integrations',
             propertyName: 'gitlab.include.archived',
             propertyValue: this.includeArchived,
           },
@@ -132,9 +150,39 @@ export default {
             propertyName: 'gitlab.topics',
             propertyValue: JSON.stringify(this.topics),
           },
+          {
+            groupName: 'integrations',
+            propertyName: 'gitlab.app.id',
+            propertyValue: this.gitlabAppId,
+          },
+          {
+            groupName: 'integrations',
+            propertyName: 'gitlab.url',
+            propertyValue: this.gitlabUrl,
+          },
         ]);
       } catch (error) {
         console.error('Error updating configuration properties:', error);
+      }
+    },
+    setGitlabState: function () {
+      let url = `${this.$api.BASE_URL}/${this.$api.URL_INTEGRATION}/gitlab/${this.isGitlabEnabled}`;
+      this.axios
+        .post(url)
+        .then(() => {
+          console.log('GitLab state updated successfully');
+          this.$toastr.s(this.$t('admin.configuration_saved'));
+        })
+        .catch((error) => {
+          console.error('Error updating GitLab state:', error);
+          this.$toastr.w(this.$t('condition.unsuccessful_action'));
+        });
+    },
+  },
+  watch: {
+    isGitlabEnabled() {
+      if (this.isInitialized) {
+        this.setGitlabState();
       }
     },
   },
@@ -147,7 +195,7 @@ export default {
         );
       });
       if (configItems.length > 0) {
-        this.enabled = common.toBoolean(configItems[0].propertyValue);
+        this.isGitlabEnabled = common.toBoolean(configItems[0].propertyValue);
       }
       const configItemsincludeArchived = response.data.filter((item) => {
         return (
@@ -169,6 +217,25 @@ export default {
       if (configItemstopics.length > 0) {
         this.topics = JSON.parse(configItemstopics[0].propertyValue);
       }
+      const configItemsAppId = response.data.filter((item) => {
+        return (
+          item.groupName === 'integrations' &&
+          item.propertyName === 'gitlab.app.id'
+        );
+      });
+      if (configItemsAppId.length > 0) {
+        this.gitlabAppId = configItemsAppId[0].propertyValue;
+      }
+      const configItemsUrl = response.data.filter((item) => {
+        return (
+          item.groupName === 'integrations' &&
+          item.propertyName === 'gitlab.url'
+        );
+      });
+      if (configItemsUrl.length > 0) {
+        this.gitlabUrl = configItemsUrl[0].propertyValue;
+      }
+      this.isInitialized = true;
     });
   },
 };
