@@ -121,7 +121,7 @@
     "github_advisories": "Повідомлення GitHub",
     "gitlab": "GitLab",
     "gitlab_application_id": "Ідентифікатор програми GitLab",
-    "gitlab_sync_enable": "Увімкнути синхронізацію GitLab",
+    "gitlab_integration_enable": "Увімкнути інтеграцію GitLab",
     "gitlab_url": "URL-адреса GitLab",
     "go_modules": "Go Modules",
     "group": "Група",

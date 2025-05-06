@@ -121,7 +121,7 @@
     "github_advisories": "Avvisi su GitHub",
     "gitlab": "GitLab",
     "gitlab_application_id": "ID applicazione GitLab",
-    "gitlab_sync_enable": "Abilita la sincronizzazione del progetto Gitlab",
+    "gitlab_integration_enable": "Abilita l'integrazione di GitLab",
     "gitlab_url": "URL di base di GitLab",
     "go_modules": "Vai Moduli",
     "group": "Gruppo",

@@ -121,7 +121,7 @@
     "github_advisories": "GitHub सलाह",
     "gitlab": "GitLab",
     "gitlab_application_id": "GitLab एप्लिकेशन आईडी",
-    "gitlab_sync_enable": "गिटलैब प्रोजेक्ट सिंक सक्षम करें",
+    "gitlab_integration_enable": "GitLab एकीकरण सक्षम करें",
     "gitlab_url": "GitLab यूआरएल",
     "go_modules": "जाओ मॉड्यूल",
     "group": "समूह",

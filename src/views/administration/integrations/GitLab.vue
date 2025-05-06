@@ -7,7 +7,7 @@
         v-model="isGitlabEnabled"
         label
         v-bind="labelIcon"
-      />{{ $t('admin.gitlab_sync_enable') }}
+      />{{ $t('admin.gitlab_integration_enable') }}
       <br />
       <c-switch
         id="includeArchived"
