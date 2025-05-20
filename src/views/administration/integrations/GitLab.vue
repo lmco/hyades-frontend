@@ -235,8 +235,7 @@ export default {
       let configItems = response.data.filter((item) => {
         return item.groupName === 'integrations';
       });
-      for (let i = 0; i < configItems.length; i++) {
-        let item = configItems[i];
+      for (let item of configItems) {
         switch (item.propertyName) {
           case 'gitlab.enabled':
             this.isGitlabEnabled = common.toBoolean(item.propertyValue);
