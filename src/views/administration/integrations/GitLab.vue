@@ -7,7 +7,7 @@
         v-model="isGitlabEnabled"
         label
         v-bind="labelIcon"
-      />{{ $t('admin.gitlab_integration_enable') }}
+      />{{ $t('admin.integration_gitlab_enable') }}
       <br />
       <c-switch
         id="sbomEnabled"
@@ -15,7 +15,7 @@
         v-model="sbomEnabled"
         label
         v-bind="labelIcon"
-      />{{ $t('admin.integration_sbom_enabled') }}
+      />{{ $t('admin.integration_gitlab_sbom_enable') }}
       <br />
       <c-switch
         id="includeArchived"
