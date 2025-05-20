@@ -117,8 +117,6 @@
 <script>
 import { Switch as cSwitch } from '@coreui/vue';
 
-import BValidatedInputGroupFormInput from '../../../forms/BValidatedInputGroupFormInput';
-import axios from 'axios';
 import common from '../../../shared/common';
 import configPropertyMixin from '../mixins/configPropertyMixin';
 import ActionableListGroupItem from '../../components/ActionableListGroupItem';
