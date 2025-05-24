@@ -108,23 +108,22 @@ export default {
       loading: true,
     };
   },
-  mounted() {
+  async mounted() {
     // Fetch user projects and available roles for each project (userManagementMixin)
-    Promise.all([
-      this.loadUserProjects(this.username),
-      this.loadAvailableProjectRoles(),
-    ])
-      .then((response) => {
-        this.projectRoles = response[0] || [];
-        this.availableRoles = response[1] || [];
-      })
-      .catch((error) => {
-        if (!this.axios.isAxiosError(error)) console.error(error);
-        this.$toastr.e(this.$t('condition.unsuccessful_action'));
-      })
-      .finally(() => {
-        this.loading = false;
-      });
+    this.loading = true;
+    try {
+      const [projectRoles, availableRoles] = await Promise.all([
+        this.loadUserProjects(this.username),
+        this.loadAvailableProjectRoles(),
+      ]);
+      this.projectRoles = projectRoles || [];
+      this.availableRoles = availableRoles || [];
+    } catch (error) {
+      if (!this.axios.isAxiosError(error)) console.error(error);
+      this.$toastr.e(this.$t('condition.unsuccessful_action'));
+    } finally {
+      this.loading = false;
+    }
   },
   methods: {
     deleteUser: function () {

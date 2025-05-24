@@ -36,7 +36,6 @@ export default {
       }
     },
 
-    // TODO: internal server error 500
     _deleteUser: async function (endpoint) {
       this._userManagementMixin_checkReady();
       try {
