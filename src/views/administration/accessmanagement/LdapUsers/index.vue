@@ -58,6 +58,7 @@ export default {
       rowEvents: {
         update: 'admin:ldapusers:rowUpdate',
         delete: 'admin:ldapusers:rowDeleted',
+        cacheKey: 'ldapuser',
       },
       columns: [
         {
@@ -114,6 +115,8 @@ export default {
           });
         },
         onExpandRow: this.vueFormatterInit,
+        onRefresh: this.clearSessionCache,
+        onLoadSuccess: this.clearSessionCache,
         toolbar: '#customToolbar',
         responseHandler: function (res, xhr) {
           res.total = xhr.getResponseHeader('X-Total-Count');
@@ -128,6 +131,16 @@ export default {
       this.$refs.table.refresh({
         silent: true,
       });
+      this.clearSessionCache();
+    },
+    clearSessionCache: function () {
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key.startsWith(this.rowEvents.cacheKey)) {
+          sessionStorage.removeItem(key);
+          if (i != 0) i -= 2;
+        }
+      }
     },
   },
 };

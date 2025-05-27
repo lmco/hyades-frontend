@@ -53,6 +53,7 @@ export default {
       rowEvents: {
         update: 'admin:teams:rowUpdate',
         delete: 'admin:teams:rowDeleted',
+        cacheKey: 'teamview',
       },
       columns: [
         {
@@ -119,6 +120,8 @@ export default {
           });
         },
         onExpandRow: this.vueFormatterInit,
+        onLoadSuccess: this.clearSessionCache,
+        onRefresh: this.clearSessionCache,
         toolbar: '#customToolbar',
         responseHandler: function (res, xhr) {
           res.total = xhr.getResponseHeader('X-Total-Count');
@@ -133,6 +136,16 @@ export default {
       this.$refs.table.refresh({
         silent: true,
       });
+      this.clearSessionCache();
+    },
+    clearSessionCache: function () {
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key.startsWith(this.rowEvents.cacheKey)) {
+          sessionStorage.removeItem(key);
+          if (i != 0) i -= 2;
+        }
+      }
     },
   },
 };

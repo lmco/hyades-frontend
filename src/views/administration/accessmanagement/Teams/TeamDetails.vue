@@ -172,7 +172,11 @@ export default {
   props: {
     row: { type: Object, required: true },
     index: { type: Number, required: true },
-    rowEvents: { update: { type: String }, delete: { type: String } },
+    rowEvents: {
+      update: { type: String },
+      delete: { type: String },
+      cacheKey: { type: String },
+    },
   },
   data() {
     return {
@@ -189,13 +193,10 @@ export default {
         dataOn: '\u2713',
         dataOff: '\u2715',
       },
-      storageIdentifier: `TeamDetail:${this.row.uuid}`,
+      storageIdentifier: `${this.rowEvents.cacheKey}:${this.row.uuid}`,
     };
   },
   beforeMount() {
-    console.log('initializing team details');
-    console.log(this.row.apiKeys);
-    console.log(this.apiKeys);
     const modified = sessionStorage.getItem(this.storageIdentifier);
     if (modified) {
       sessionStorage.removeItem(this.storageIdentifier);

@@ -10,9 +10,42 @@ export default {
   created: function () {
     this._userManagementMixin_init();
   },
+  async mounted() {},
   data: () => ({ _userManagementMixin_ready: false }),
   methods: {
-    // -- public methods --
+    // -- init methods --
+    initFromSessionCache: async function () {
+      try {
+        const cacheKey = `${this.rowEvents.cacheKey}:${this.username}`;
+        if (sessionStorage.getItem(cacheKey)) {
+          const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}?type=${this.userType}&username=${this.username}`;
+          const response = await this.axios.get(endpoint);
+          sessionStorage.removeItem(cacheKey);
+          EventBus.$emit(this.rowEvents.update, this.index, response.data);
+        }
+      } catch (error) {
+        console.error('Error during beforeMount:', error);
+        this.handleError(error, 'condition.unsuccessful_action');
+      }
+    },
+
+    loadUserManagementData: async function () {
+      // Fetch user projects and available roles for each project (userManagementMixin)
+      this.loading = true;
+      try {
+        const [projectRoles, availableRoles] = await Promise.all([
+          this.loadUserProjects(this.username),
+          this.loadAvailableProjectRoles(),
+        ]);
+        this.projectRoles = projectRoles || [];
+        this.availableRoles = availableRoles || [];
+      } catch (error) {
+        if (!this.axios.isAxiosError(error)) console.error(error);
+        this.$toastr.e(this.$t('condition.unsuccessful_action'));
+      } finally {
+        this.loading = false;
+      }
+    },
 
     // Loads the user roles for a specific user. return data if targetField is null
     loadUserProjects: async function (username) {
@@ -36,10 +69,11 @@ export default {
       }
     },
 
+    // -- user management methods --
     _deleteUser: async function (endpoint) {
       this._userManagementMixin_checkReady();
       try {
-        await this.axios.delete(endpoint, {
+        const response = await this.axios.delete(endpoint, {
           data: {
             // e.g { username: 'testuser' }
             [this._identifierField]: this.row[this._identifierField],
@@ -151,21 +185,28 @@ export default {
     },
 
     // -- utility methods --
-
     handleError: function (error, toastMessageKey) {
       const messageKey = toastMessageKey ?? 'condition.unsuccessful_action';
       console.error(error);
       this.$toastr.w(this.$t(messageKey));
     },
+
     _successfulResponse_update: function (response) {
-      if (this.rowEvents && this.rowEvents.update)
-        EventBus.$emit(this.rowEvents.update, this.index, response.data);
+      if (this.rowEvents?.update && this.rowEvents.cacheKey) {
+        // EventBus.$emit(this.rowEvents.update, this.index, response.data);
+        const cacheKey = `${this.rowEvents.cacheKey}:${response.data[this._identifierField]}`;
+        this.$set(this, 'user', response.data);
+        sessionStorage.setItem(cacheKey, new Date().toString());
+      }
       this.$toastr.s(this.$t('message.updated'));
     },
 
     _successfulResponse_delete: function () {
-      if (this.rowEvents && this.rowEvents.delete)
+      if (this.rowEvents?.delete && this.rowEvents.cacheKey) {
+        const cacheKey = `${this.rowEvents.cacheKey}:${[this._identifierField]}`;
+        sessionStorage.removeItem(cacheKey);
         EventBus.$emit(this.rowEvents.delete, this.index);
+      }
       this.$toastr.s(this.$t('admin.user_deleted'));
     },
 
@@ -195,7 +236,8 @@ export default {
       const rowEventsReady = !!(
         this.rowEvents &&
         this.rowEvents.update &&
-        this.rowEvents.delete
+        this.rowEvents.delete &&
+        this.rowEvents.cacheKey
       );
 
       if (!rowEventsReady) {

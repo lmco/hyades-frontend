@@ -1,70 +1,86 @@
 <template>
-  <div>
-    <b-row class="expanded-row">
-      <b-col sm="6">
-        <b-form-group :label="this.$t('admin.team_membership')">
-          <div class="list-group">
-            <span v-for="team in teams" :key="team.name">
+  <div class="expanded-row tab-view">
+    <b-tabs pills content-class="mt-3" style="height: 100%">
+      <b-tab title="Membership">
+        <b-container fluid class="p-0" style="max-width: 31.25rem">
+          <b-form-group>
+            <div class="list-group">
+              <span v-for="team in teams" :key="team.name">
+                <actionable-list-group-item
+                  :value="team.name"
+                  :delete-icon="true"
+                  v-on:actionClicked="removeTeamMembership(team.uuid)"
+                />
+              </span>
               <actionable-list-group-item
-                :value="team.name"
-                :delete-icon="true"
-                v-on:actionClicked="removeTeamMembership(team.uuid)"
+                :add-icon="true"
+                v-on:actionClicked="
+                  $root.$emit('bv::show::modal', 'selectTeamModal')
+                "
               />
-            </span>
-            <actionable-list-group-item
-              :add-icon="true"
-              v-on:actionClicked="
-                $root.$emit('bv::show::modal', 'selectTeamModal')
-              "
+            </div>
+          </b-form-group>
+        </b-container>
+      </b-tab>
+      <b-tab :title="$t('admin.permissions')">
+        <b-container fluid class="p-0" style="max-width: 31.25rem">
+          <b-form-group>
+            <div class="list-group">
+              <span v-for="permission in permissions" :key="permission.name">
+                <actionable-list-group-item
+                  :value="permission.name"
+                  :delete-icon="true"
+                  v-on:actionClicked="removePermission(permission)"
+                />
+              </span>
+              <actionable-list-group-item
+                :add-icon="true"
+                v-on:actionClicked="
+                  $root.$emit('bv::show::modal', 'selectPermissionModal')
+                "
+              />
+            </div>
+          </b-form-group>
+        </b-container>
+      </b-tab>
+      <b-tab :title="this.$t('message.projects')">
+        <div class="" style="width: 100%">
+          <div v-if="loading" class="d-flex justify-content-center">
+            <b-spinner variant="primary" type="grow" label="Loading"
+              >Loading ...
+            </b-spinner>
+          </div>
+          <div v-else>
+            <label for="">{{ this.$t('message.projects') }}</label>
+            <user-roles-table
+              :parentContext="{ row, index }"
+              :projectRoles="projectRoles"
+              :availableRoles="availableRoles"
+              @addProjectRole="addProjectRole"
+              @updateProjectRole="updateProjectRole"
+              @removeProjectRole="removeProjectRole"
             />
           </div>
-        </b-form-group>
-        <b-form-group :label="this.$t('admin.permissions')">
-          <div class="list-group">
-            <span v-for="permission in permissions" :key="permission.name">
-              <actionable-list-group-item
-                :value="permission.name"
-                :delete-icon="true"
-                v-on:actionClicked="removePermission(permission)"
-              />
-            </span>
-            <actionable-list-group-item
-              :add-icon="true"
-              v-on:actionClicked="
-                $root.$emit('bv::show::modal', 'selectPermissionModal')
-              "
-            />
-          </div>
-        </b-form-group>
-      </b-col>
-      <b-col sm="6">
-        <div style="text-align: right">
-          <b-button variant="outline-danger" @click="deleteUser">{{
-            $t('admin.delete_user')
-          }}</b-button>
         </div>
-      </b-col>
-    </b-row>
-    <b-row class="expanded-row p-3" colspan="2">
-      <div class="" style="width: 100%">
-        <div v-if="loading" class="d-flex justify-content-center">
-          <b-spinner variant="primary" type="grow" label="Loading"
-            >Loading ...
-          </b-spinner>
-        </div>
-        <div v-else>
-          <label for="">{{ this.$t('message.projects') }}</label>
-          <user-roles-table
-            :parentContext="{ row, index }"
-            :projectRoles="projectRoles"
-            :availableRoles="availableRoles"
-            @addProjectRole="addProjectRole"
-            @updateProjectRole="updateProjectRole"
-            @removeProjectRole="removeProjectRole"
-          />
-        </div>
-      </div>
-    </b-row>
+      </b-tab>
+
+      <template #tabs-end>
+        <li
+          role="presentation"
+          class="nav-item action-group"
+          style="margin-left: auto; margin-top: auto"
+        >
+          <b-button
+            style="height: 100%"
+            variant="outline-danger"
+            @click="deleteUser"
+            >{{ $t('admin.delete_user') }}</b-button
+          >
+        </li>
+      </template>
+    </b-tabs>
+
+    <b-row class="expanded-row p-3" colspan="2"> </b-row>
     <select-team-modal
       :currentTeams="teams"
       v-on:selection="updateTeamSelection"
@@ -75,6 +91,7 @@
     />
   </div>
 </template>
+
 <script>
 import i18n from '../../../../i18n';
 import permissionsMixin from '../../../../mixins/permissionsMixin';
@@ -89,7 +106,11 @@ export default {
   props: {
     index: { type: Number, required: true },
     row: { type: Object, required: true },
-    rowEvents: { update: { type: String }, delete: { type: String } },
+    rowEvents: {
+      update: { type: String },
+      delete: { type: String },
+      cacheKey: { type: String },
+    },
   },
   mixins: [permissionsMixin, userManagementMixin],
   components: {
@@ -100,30 +121,31 @@ export default {
   },
   data() {
     return {
+      user: this.row, // local cache
       username: this.row.username,
       teams: this.row.teams,
       permissions: this.row.permissions,
       projectRoles: null,
       availableRoles: null,
       loading: true,
+      userType: 'oidc',
     };
   },
-  async mounted() {
-    // Fetch user projects and available roles for each project (userManagementMixin)
-    this.loading = true;
-    try {
-      const [projectRoles, availableRoles] = await Promise.all([
-        this.loadUserProjects(this.username),
-        this.loadAvailableProjectRoles(),
-      ]);
-      this.projectRoles = projectRoles || [];
-      this.availableRoles = availableRoles || [];
-    } catch (error) {
-      if (!this.axios.isAxiosError(error)) console.error(error);
-      this.$toastr.e(this.$t('condition.unsuccessful_action'));
-    } finally {
-      this.loading = false;
-    }
+  beforeMount() {
+    this.initFromSessionCache();
+  },
+  mounted() {
+    this.loadUserManagementData();
+  },
+  watch: {
+    user: {
+      handler(newValue) {
+        this.username = newValue.username;
+        this.teams = newValue.teams;
+        this.permissions = newValue.permissions;
+      },
+      deep: true,
+    },
   },
   methods: {
     deleteUser: function () {
