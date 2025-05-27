@@ -84,7 +84,6 @@ export default {
           name: this.name,
         })
         .then((response) => {
-          // this.role = response.data;
           EventBus.$emit(this.rowEvents.update, this.index, response.data);
           this.$toastr.s(this.$t('message.updated'));
         })
@@ -104,24 +103,20 @@ export default {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         });
     },
-    updatePermissionSelection: function (selections) {
-      this.$root.$emit('bv::hide::modal', 'selectPermissionModal');
-      for (let i = 0; i < selections.length; i++) {
-        let selection = selections[i];
-        let url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${selection.name}/role/${this.role.uuid}`;
-        this.axios
-          .post(url)
-          .then((response) => {
-            this.syncVariables(response.data);
-            this.$toastr.s(this.$t('message.updated'));
-          })
-          .catch((error) => {
-            if (error.response.status === 304) {
-              //this.$toastr.w(this.$t('condition.unsuccessful_action'));
-            } else {
-              this.$toastr.w(this.$t('condition.unsuccessful_action'));
-            }
-          });
+    updatePermissionSelection: async function (selections) {
+      const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_ROLE_PERMISSION}`;
+      const requestBody = {
+        role: this.role.uuid,
+        permissions: selections.map((selection) => selection.name),
+      };
+
+      try {
+        const response = await this.axios.put(endpoint, requestBody);
+        this.$toastr.s(this.$t('message.updated'));
+        this.syncVariables(response.data);
+      } catch (error) {
+        if (error?.response?.status === 304) return;
+        console.error(error);
       }
     },
     removePermission: function (permission) {
@@ -138,8 +133,7 @@ export default {
         });
     },
     syncVariables: function (role) {
-      this.role = role;
-      this.permissions = role.permissions;
+      EventBus.$emit(this.rowEvents.update, this.index, role);
     },
   },
 };
