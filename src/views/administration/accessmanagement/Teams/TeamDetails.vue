@@ -206,7 +206,6 @@ export default {
   watch: {
     team: {
       handler(newValue) {
-        console.log(`team %O`, newValue);
         this.name = newValue.name;
         this.apiKeys = this.apiKeysToDict(newValue.apiKeys ?? []);
         this.permissions = newValue.permissions;
