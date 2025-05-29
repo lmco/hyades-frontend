@@ -1,137 +1,120 @@
 <template>
-  <div class="expanded-row tab-view">
-    <b-tabs pills content-class="mt-3">
-      <b-tab title="Info">
-        <b-container fluid class="p-0" style="max-width: 31.25rem">
-          <b-input-group-form-input
-            id="input-managed-user-fullname"
-            :label="$t('message.fullname')"
-            input-group-size="mb-3"
-            required="true"
-            type="text"
-            v-model="fullname"
-            lazy="true"
-            v-debounce:750ms="updateUser"
-            :debounce-events="'keyup'"
-          />
-          <b-input-group-form-input
-            id="input-managed-user-email"
-            :label="$t('message.email')"
-            input-group-size="mb-3"
-            required="true"
-            type="text"
-            v-model="email"
-            lazy="true"
-            v-debounce:750ms="updateUser"
-            :debounce-events="'keyup'"
-          />
-          <c-switch
-            id="forcePasswordChange"
-            color="primary"
-            v-model="forcePasswordChange"
-            label
-            v-bind="labelIcon"
-          />{{ $t('admin.change_password_next_login') }}
-          <br />
-          <c-switch
-            id="nonExpiryPassword"
-            color="primary"
-            v-model="nonExpiryPassword"
-            label
-            v-bind="labelIcon"
-          />{{ $t('admin.password_never_expires') }}
-          <br />
-          <c-switch
-            id="suspended"
-            color="primary"
-            v-model="suspended"
-            label
-            v-bind="labelIcon"
-          />{{ $t('admin.suspended') }}
-        </b-container>
-      </b-tab>
-      <b-tab :title="this.$t('admin.team_membership')">
-        <b-container fluid class="p-0" style="max-width: 31.25rem">
-          <b-form-group>
-            <div class="list-group">
-              <span v-for="team in teams" :key="team.name">
-                <actionable-list-group-item
-                  :tooltip="$t('admin.remove_team_membership')"
-                  :value="team.name"
-                  :delete-icon="true"
-                  v-on:actionClicked="removeTeamMembership(team.uuid)"
-                />
-              </span>
+  <div>
+    <b-row class="expanded-row">
+      <b-col sm="6">
+        <b-form-group :label="this.$t('admin.team_membership')">
+          <div class="list-group">
+            <span v-for="team in teams" :key="team.name">
               <actionable-list-group-item
-                :add-icon="true"
-                v-on:actionClicked="
-                  $root.$emit('bv::show::modal', 'selectTeamModal')
-                "
+                :tooltip="$t('admin.remove_team_membership')"
+                :value="team.name"
+                :delete-icon="true"
+                v-on:actionClicked="removeTeamMembership(team.uuid)"
               />
-            </div>
-          </b-form-group>
-        </b-container>
-      </b-tab>
-      <b-tab :title="this.$t('admin.permissions')">
-        <b-container fluid class="p-0" style="max-width: 31.25rem">
-          <b-form-group>
-            <div class="list-group">
-              <span v-for="permission in permissions" :key="permission.name">
-                <actionable-list-group-item
-                  :tooltip="$t('admin.remove_permission')"
-                  :value="permission.name"
-                  :delete-icon="true"
-                  v-on:actionClicked="removePermission(permission)"
-                />
-              </span>
-              <actionable-list-group-item
-                :add-icon="true"
-                v-on:actionClicked="openPermissionModal"
-              />
-            </div>
-          </b-form-group>
-        </b-container>
-      </b-tab>
-      <b-tab :title="this.$t('message.projects')">
-        <div class="" style="width: 100%">
-          <div v-if="loading" class="d-flex justify-content-center">
-            <b-spinner variant="primary" type="grow" label="Loading"
-              >Loading ...
-            </b-spinner>
-          </div>
-          <div v-else>
-            <user-roles-table
-              :parentContext="{ row, index }"
-              :projectRoles="projectRoles"
-              :availableRoles="availableRoles"
-              @addProjectRole="addProjectRole"
-              @updateProjectRole="updateProjectRole"
-              @removeProjectRole="removeProjectRole"
+            </span>
+            <actionable-list-group-item
+              :add-icon="true"
+              v-on:actionClicked="
+                $root.$emit('bv::show::modal', 'selectTeamModal')
+              "
             />
           </div>
-        </div>
-      </b-tab>
-
-      <template #tabs-end>
-        <li
-          role="presentation"
-          class="nav-item action-group"
-          style="margin-left: auto"
-        >
-          <div class="d-flex" style="gap: 0.625rem">
-            <b-button
-              variant="outline-primary"
-              @click="$root.$emit('bv::show::modal', 'changePasswordModal')"
-              >{{ $t('admin.change_password') }}</b-button
-            >
-            <b-button variant="outline-danger" @click="deleteUser">{{
-              $t('admin.delete_user')
-            }}</b-button>
+        </b-form-group>
+        <b-form-group :label="this.$t('admin.permissions')">
+          <div class="list-group">
+            <span v-for="permission in permissions" :key="permission.name">
+              <actionable-list-group-item
+                :tooltip="$t('admin.remove_permission')"
+                :value="permission.name"
+                :delete-icon="true"
+                v-on:actionClicked="removePermission(permission)"
+              />
+            </span>
+            <actionable-list-group-item
+              :add-icon="true"
+              v-on:actionClicked="openPermissionModal"
+            />
           </div>
-        </li>
-      </template>
-    </b-tabs>
-    <b-row class="expanded-row p-3" colspan="2"> </b-row>
+        </b-form-group>
+      </b-col>
+      <b-col sm="6">
+        <b-input-group-form-input
+          id="input-managed-user-fullname"
+          :label="$t('message.fullname')"
+          input-group-size="mb-3"
+          required="true"
+          type="text"
+          v-model="fullname"
+          lazy="true"
+          v-debounce:750ms="updateUser"
+          :debounce-events="'keyup'"
+        />
+        <b-input-group-form-input
+          id="input-managed-user-email"
+          :label="$t('message.email')"
+          input-group-size="mb-3"
+          required="true"
+          type="text"
+          v-model="email"
+          lazy="true"
+          v-debounce:750ms="updateUser"
+          :debounce-events="'keyup'"
+        />
+        <c-switch
+          id="forcePasswordChange"
+          color="primary"
+          v-model="forcePasswordChange"
+          label
+          v-bind="labelIcon"
+        />{{ $t('admin.change_password_next_login') }}
+        <br />
+        <c-switch
+          id="nonExpiryPassword"
+          color="primary"
+          v-model="nonExpiryPassword"
+          label
+          v-bind="labelIcon"
+        />{{ $t('admin.password_never_expires') }}
+        <br />
+        <c-switch
+          id="suspended"
+          color="primary"
+          v-model="suspended"
+          label
+          v-bind="labelIcon"
+        />{{ $t('admin.suspended') }}
+        <div style="text-align: right">
+          <b-button
+            variant="outline-primary"
+            @click="$root.$emit('bv::show::modal', 'changePasswordModal')"
+            >{{ $t('admin.change_password') }}</b-button
+          >
+          <b-button variant="outline-danger" @click="deleteUser">{{
+            $t('admin.delete_user')
+          }}</b-button>
+        </div>
+      </b-col>
+    </b-row>
+    <b-row class="expanded-row p-3" colspan="2">
+      <div class="" style="width: 100%">
+        <div v-if="loading" class="d-flex justify-content-center">
+          <b-spinner variant="primary" type="grow" label="Loading"
+            >Loading ...
+          </b-spinner>
+        </div>
+        <div v-else>
+          <label for="">{{ this.$t('message.projects') }}</label>
+          <user-roles-table
+            :parentContext="{ row, index }"
+            :projectRoles="projectRoles"
+            :availableRoles="availableRoles"
+            @addProjectRole="addProjectRole"
+            @updateProjectRole="updateProjectRole"
+            @removeProjectRole="removeProjectRole"
+          />
+        </div>
+      </div>
+    </b-row>
     <select-team-modal
       :currentTeams="teams"
       v-on:selection="updateTeamSelection"
@@ -310,22 +293,3 @@ export default {
   },
 };
 </script>
-
-<style lang="css" scoped>
-.tab-container {
-  height: 100%;
-  max-width: 32.5rem;
-}
-
-.content-shrink {
-  max-width: 31.25rem;
-  width: 100%;
-}
-
-::v-deep(.tabs.row ul.nav-pills) {
-  height: 100%;
-}
-
-::v-deep(.tabs.row ul.nav-pills) {
-}
-</style>
