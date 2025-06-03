@@ -42,6 +42,15 @@
         v-model="gitlabUrl"
         lazy="true"
       />
+      <b-validated-input-group-form-input
+        id="gitlab-key"
+        :label="$t('admin.gitlab_key')"
+        input-group-size="mb-3"
+        rules="required"
+        type="url"
+        v-model="gitlabKey"
+        lazy="true"
+      />
       <br />
       <c-switch
         id="autoCreateProjects"
@@ -138,6 +147,7 @@ export default {
       includeArchived: false,
       gitlabAppId: '',
       gitlabUrl: '',
+      gitlabKey: '/oauth/discovery/keys',
       sbomEnabled: true,
       autoCreateProjects: false,
       audience: '',
@@ -202,6 +212,11 @@ export default {
             propertyName: 'gitlab.url',
             propertyValue: this.gitlabUrl,
           },
+          {
+            groupName: 'integrations',
+            propertyName: 'gitlab.key',
+            propertyValue: this.gitlabKey,
+          },
         ]);
       } catch (error) {
         console.error('Error updating configuration properties:', error);
@@ -258,6 +273,9 @@ export default {
             break;
           case 'gitlab.url':
             this.gitlabUrl = configItemsAppId[0].propertyValue;
+            break;
+          case 'gitlab.key':
+            this.gitlabKey = configItemsAppId[0].propertyValue;
             break;
         }
       }

@@ -121,6 +121,7 @@
     "github": "GitHub",
     "github_advisories": "GitHub Advisories",
     "gitlab": "GitLab",
+    "gitlab_key": "GitLab キ",
     "go_modules": "Go Modules",
     "group": "グループ",
     "hackage": "Hackage",

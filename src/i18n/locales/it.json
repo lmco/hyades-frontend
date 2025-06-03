@@ -123,6 +123,7 @@
     "gitlab": "GitLab",
     "gitlab_application_id": "ID applicazione GitLab",
     "gitlab_url": "URL di base di GitLab",
+    "gitlab_key": "Chiave GitLab",
     "go_modules": "Vai Moduli",
     "group": "Gruppo",
     "hackage": "Hackage",

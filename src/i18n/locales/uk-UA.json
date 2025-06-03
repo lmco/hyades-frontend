@@ -123,6 +123,7 @@
     "gitlab": "GitLab",
     "gitlab_application_id": "Ідентифікатор програми GitLab",
     "gitlab_url": "URL-адреса GitLab",
+    "gitlab_key": "Ключ GitLab",
     "go_modules": "Go Modules",
     "group": "Група",
     "hackage": "Hackage",
