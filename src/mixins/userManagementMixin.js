@@ -16,35 +16,42 @@ export default {
     // -- init methods --
     initFromSessionCache: async function () {
       try {
-        const cacheKey = `${this.rowEvents.cacheKey}:${this.username}`;
+        const cacheKey = `${this.rowEvents.cacheKey}:${this.row[this._identifierField]}`;
         if (sessionStorage.getItem(cacheKey)) {
-          const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}?type=${this.userType}&username=${this.username}`;
+          const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}?type=${this.userType}&username=${this.row[this._identifierField]}`;
           const response = await this.axios.get(endpoint);
           sessionStorage.removeItem(cacheKey);
           EventBus.$emit(this.rowEvents.update, this.index, response.data);
         }
       } catch (error) {
-        console.error('Error during beforeMount:', error);
-        this.handleError(error, 'condition.unsuccessful_action');
+        const username = this.row[this._identifierField];
+        console.error(
+          `Failed to initialize from session cache for user "${username}" (type: ${this.userType}):`,
+        );
+        this.handleError(error);
       }
     },
 
-    loadUserManagementData: async function () {
-      // Fetch user projects and available roles for each project (userManagementMixin)
-      this.loading = true;
-      try {
-        const [projectRoles, availableRoles] = await Promise.all([
-          this.loadUserProjects(this.username),
-          this.loadAvailableProjectRoles(),
-        ]);
-        this.projectRoles = projectRoles || [];
-        this.availableRoles = availableRoles || [];
-      } catch (error) {
-        if (!this.axios.isAxiosError(error)) console.error(error);
-        this.$toastr.e(this.$t('condition.unsuccessful_action'));
-      } finally {
-        this.loading = false;
-      }
+    loadUserManagementData: function () {
+      this.loadUserProjects(this.row[this._identifierField])
+        .then((projectRoles) => {
+          this.$set(this, 'projectRoles', projectRoles);
+        })
+        .catch((error) => {
+          this.handleError(error, tMsg);
+          const tMsg = this.$t('message.project_role_mappings_failed');
+          this.$set(this, 'projectRoles', []);
+        });
+
+      this.loadAvailableProjectRoles()
+        .then((availableRoles) => {
+          this.$set(this, 'availableRoles', availableRoles);
+        })
+        .catch((error) => {
+          this.$set(this, 'availableRoles', []);
+          const tMsg = this.$t('message.available_roles_failed');
+          this.handleError(error, tMsg);
+        });
     },
 
     // Loads the user roles for a specific user. return data if targetField is null
@@ -73,7 +80,7 @@ export default {
     _deleteUser: async function (endpoint) {
       this._userManagementMixin_checkReady();
       try {
-        const response = await this.axios.delete(endpoint, {
+        await this.axios.delete(endpoint, {
           data: {
             // e.g { username: 'testuser' }
             [this._identifierField]: this.row[this._identifierField],
@@ -185,10 +192,10 @@ export default {
     },
 
     // -- utility methods --
-    handleError: function (error, toastMessageKey) {
-      const messageKey = toastMessageKey ?? 'condition.unsuccessful_action';
+    handleError: function (error, toastMessage) {
+      const msg = toastMessage ?? this.$t('condition.unsuccessful_action');
       console.error(error);
-      this.$toastr.w(this.$t(messageKey));
+      this.$toastr.e(msg);
     },
 
     _successfulResponse_update: function (response) {

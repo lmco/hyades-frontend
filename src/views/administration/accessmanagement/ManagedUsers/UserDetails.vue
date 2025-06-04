@@ -97,22 +97,15 @@
     </b-row>
     <b-row class="expanded-row p-3" colspan="2">
       <div class="" style="width: 100%">
-        <div v-if="loading" class="d-flex justify-content-center">
-          <b-spinner variant="primary" type="grow" label="Loading"
-            >Loading ...
-          </b-spinner>
-        </div>
-        <div v-else>
-          <label for="">{{ this.$t('message.projects') }}</label>
-          <user-roles-table
-            :parentContext="{ row, index }"
-            :projectRoles="projectRoles"
-            :availableRoles="availableRoles"
-            @addProjectRole="addProjectRole"
-            @updateProjectRole="updateProjectRole"
-            @removeProjectRole="removeProjectRole"
-          />
-        </div>
+        <label for="">{{ this.$t('message.projects') }}</label>
+        <user-roles-table
+          :parentContext="{ row, index }"
+          :projectRoles="projectRoles"
+          :availableRoles="availableRoles"
+          @addProjectRole="addProjectRole"
+          @updateProjectRole="updateProjectRole"
+          @removeProjectRole="removeProjectRole"
+        />
       </div>
     </b-row>
     <select-team-modal
