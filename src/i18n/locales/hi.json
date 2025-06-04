@@ -123,7 +123,7 @@
     "gitlab": "GitLab",
     "gitlab_application_id": "GitLab एप्लिकेशन आईडी",
     "gitlab_url": "GitLab यूआरएल",
-    "gitlab_key": "GitLab कुंजी",
+    "gitlab_jwks_path": "GitLab JWKS पथ",
     "go_modules": "जाओ मॉड्यूल",
     "group": "समूह",
     "hackage": "Hackage",

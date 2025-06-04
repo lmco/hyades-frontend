@@ -43,12 +43,12 @@
         lazy="true"
       />
       <b-validated-input-group-form-input
-        id="gitlab-key"
-        :label="$t('admin.gitlab_key')"
+        id="gitlab-jwks-path"
+        :label="$t('admin.gitlab_jwks_path')"
         input-group-size="mb-3"
         rules="required"
         type="url"
-        v-model="gitlabKey"
+        v-model="gitlabJwksPath"
         lazy="true"
       />
       <br />
@@ -147,7 +147,7 @@ export default {
       includeArchived: false,
       gitlabAppId: '',
       gitlabUrl: '',
-      gitlabKey: '/oauth/discovery/keys',
+      gitlabJwksPath: '/oauth/discovery/keys',
       sbomEnabled: true,
       autoCreateProjects: false,
       audience: '',
@@ -214,8 +214,8 @@ export default {
           },
           {
             groupName: 'integrations',
-            propertyName: 'gitlab.key',
-            propertyValue: this.gitlabKey,
+            propertyName: 'gitlab.jwks.path',
+            propertyValue: this.gitlabJwksPath,
           },
         ]);
       } catch (error) {
@@ -274,8 +274,8 @@ export default {
           case 'gitlab.url':
             this.gitlabUrl = configItemsAppId[0].propertyValue;
             break;
-          case 'gitlab.key':
-            this.gitlabKey = configItemsAppId[0].propertyValue;
+          case 'gitlab.jwks.path':
+            this.gitlabJwksPath = configItemsAppId[0].propertyValue;
             break;
         }
       }
