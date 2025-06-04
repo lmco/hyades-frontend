@@ -143,7 +143,6 @@ export default {
       audience: '',
       topics: [],
       newTopic: '',
-      isInitialized: false,
     };
   },
   methods: {
@@ -203,6 +202,7 @@ export default {
             propertyValue: this.gitlabUrl,
           },
         ]);
+        this.setGitlabState();
       } catch (error) {
         console.error('Error updating configuration properties:', error);
       }
@@ -219,13 +219,6 @@ export default {
           console.error('Error updating GitLab state:', error);
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         });
-    },
-  },
-  watch: {
-    isGitlabEnabled() {
-      if (this.isInitialized) {
-        this.setGitlabState();
-      }
     },
   },
   created() {
@@ -246,23 +239,21 @@ export default {
             break;
           case 'gitlab.autocreate.projects':
             this.autoCreateProjects = common.toBoolean(item.propertyValue);
-            break; 
+            break;
           case 'gitlab.audience':
             this.audience = item.propertyValue;
             break;
           case 'gitlab.topics':
             this.topics = JSON.parse(item.propertyValue);
-            break; 
+            break;
           case 'gitlab.app.id':
-            this.gitlabAppId = configItemsAppId[0].propertyValue;
+            this.gitlabAppId = item.propertyValue;
             break;
           case 'gitlab.url':
-            this.gitlabUrl = configItemsAppId[0].propertyValue;
+            this.gitlabUrl = item.propertyValue;
             break;
         }
       }
-      
-      this.isInitialized = true;
     });
   },
 };
