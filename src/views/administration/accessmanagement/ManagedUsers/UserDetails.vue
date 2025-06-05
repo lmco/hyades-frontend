@@ -193,8 +193,26 @@ export default {
       if (this.supressSwitchWatchers) return;
       this.updateUser();
     },
-    suspended() {
+    async suspended(newValue) {
       if (this.supressSwitchWatchers) return;
+
+      // If suspending self, confirm first
+      if (newValue && this.$currentUser.username === this.username) {
+        const confirmed = await this.confirmAction('Suspend');
+        if (confirmed) {
+          this.updateUser();
+          return;
+        }
+        // Undo the change and suppress watcher recursion
+        this.supressSwitchWatchers = true;
+        this.suspended = false;
+        this.$nextTick(() => {
+          this.supressSwitchWatchers = false;
+        });
+        return;
+      }
+
+      // All other cases
       this.updateUser();
     },
     user: {
@@ -224,6 +242,26 @@ export default {
     openProjectModal() {
       this.$root.$emit('bv::show::modal', 'selectProjectModal');
     },
+    confirmAction(action) {
+      const h = this.$createElement;
+      const message =
+        'Warning: You are about to perform this action on your own account. This may result in losing access or being locked out. Are you sure you want to continue?';
+      const titleVNode = h('div', {
+        domProps: { innerHTML: `Confirm <strong><b>${action}</b><strong>` },
+      });
+      const messageVNode = h('div', [
+        h('p', { class: ['text-center'] }, message),
+      ]);
+
+      return this.$bvModal.msgBoxConfirm([messageVNode], {
+        title: titleVNode,
+        // size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'danger',
+        okTitle: action,
+        centered: true,
+      });
+    },
     updateUser: function () {
       const url = `${this.$api.BASE_URL}/${this.$api.URL_USER_MANAGED}`;
       this.axios
@@ -245,8 +283,12 @@ export default {
           this.$toastr.w(this.$t('condition.unsuccessful_action'));
         });
     },
-    deleteUser: function () {
+    async deleteUser() {
       const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER_MANAGED}`;
+      if (this.$currentUser.username === this.username) {
+        const confirmed = await this.confirmAction('Delete');
+        if (!confirmed) return;
+      }
       this._deleteUser(endpoint);
     },
 
