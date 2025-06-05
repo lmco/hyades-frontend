@@ -337,7 +337,8 @@
     "welcome_message_desc": "Настройте приветственное сообщение, которое отображается на стартовой странице Dependency-Track перед входом пользователей.",
     "welcome_message_enable": "Включить приветственное сообщение",
     "workflow_step_timeout": "Тайм-аут шага",
-    "workflows": "Рабочие процессы"
+    "workflows": "Рабочие процессы",
+    "permission_removed": "Разрешение удалено"
   },
   "condition": {
     "forbidden": "Запрещено (403)",
@@ -955,7 +956,9 @@
     "weakness": "Слабость",
     "will_not_fix": "Не будет исправлено",
     "workaround_available": "Доступно обходное решение",
-    "x_trust_boundary": "Пересечение границы доверия"
+    "x_trust_boundary": "Пересечение границы доверия",
+    "available_roles_failed": "Не удалось получить доступные пользовательские роли",
+    "project_role_mappings_failed": "Не удалось получить сопоставления ролей проекта"
   },
   "operator": {
     "contains_all": "содержит все",

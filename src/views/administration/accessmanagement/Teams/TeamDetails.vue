@@ -258,7 +258,7 @@ export default {
       const titleVNode = h('div', {
         domProps: { innerHTML: title },
       });
-      const messageVNode = h('div', { class: ['foobar'] }, [
+      const messageVNode = h('div', [
         h('p', { class: ['text-center'] }, [message]),
         h(
           'pre',

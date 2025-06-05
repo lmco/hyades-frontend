@@ -134,13 +134,9 @@ export default {
       this.clearSessionCache();
     },
     clearSessionCache: function () {
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        if (key.startsWith(this.rowEvents.cacheKey)) {
-          sessionStorage.removeItem(key);
-          if (i != 0) i -= 2;
-        }
-      }
+      Object.entries(sessionStorage)
+        .filter(([key]) => key.startsWith(this.rowEvents.cacheKey))
+        .forEach(([key]) => sessionStorage.removeItem(key));
     },
   },
 };
