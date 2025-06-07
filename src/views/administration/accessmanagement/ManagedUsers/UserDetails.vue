@@ -140,9 +140,10 @@ export default {
     index: { type: Number, required: true },
     row: { type: Object, required: true },
     rowEvents: {
+      userType: { type: String },
+      cacheKey: { type: String },
       update: { type: String },
       delete: { type: String },
-      cacheKey: { type: String },
     },
   },
   mixins: [permissionsMixin, userManagementMixin],
@@ -168,8 +169,6 @@ export default {
       suspended: this.row.suspended,
       projectRoles: null,
       availableRoles: null,
-      loading: true,
-      userType: 'managed',
       supressSwitchWatchers: false,
       counter: 0,
       labelIcon: {
@@ -255,8 +254,6 @@ export default {
 
       return this.$bvModal.msgBoxConfirm([messageVNode], {
         title: titleVNode,
-        // size: 'sm',
-        buttonSize: 'sm',
         okVariant: 'danger',
         okTitle: action,
         centered: true,

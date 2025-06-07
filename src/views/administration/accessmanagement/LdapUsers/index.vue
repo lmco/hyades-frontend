@@ -56,9 +56,16 @@ export default {
   data() {
     return {
       rowEvents: {
-        update: 'admin:ldapusers:rowUpdate',
-        delete: 'admin:ldapusers:rowDeleted',
-        cacheKey: 'ldapuser',
+        userType: 'ldap',
+        get cacheKey() {
+          return `${this.userType}user`;
+        },
+        get update() {
+          return `admin:${this.cacheKey}:rowUpdate`;
+        },
+        get delete() {
+          return `admin:${this.cacheKey}:rowDeleted`;
+        },
       },
       columns: [
         {

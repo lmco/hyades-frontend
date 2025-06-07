@@ -95,7 +95,7 @@ export default {
 
       try {
         await this.axios.delete(endpoint, requestBody);
-        EventBus.$emit(this.rowEvents.delete, this.index);
+        EventBus.$emit(this.rowEvents.update, this.index);
         this.$toastr.s(this.$t('admin.role_deleted'));
       } catch (error) {
         this.$toastr.w(this.$t('condition.unsuccessful_action'));
@@ -122,7 +122,7 @@ export default {
 
       try {
         const response = await this.axios.delete(endpoint);
-        EventBus.$emit(this.rowEvents.delete, this.index, response.data);
+        EventBus.$emit(this.rowEvents.update, this.index, response.data);
         this.$toastr.s(this.$t('admin.permission_removed'));
       } catch (error) {
         this.$toastr.w(this.$t('condition.unsuccessful_action'));

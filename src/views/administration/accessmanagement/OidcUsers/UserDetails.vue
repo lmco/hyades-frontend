@@ -84,9 +84,10 @@ export default {
     index: { type: Number, required: true },
     row: { type: Object, required: true },
     rowEvents: {
+      userType: { type: String },
+      cacheKey: { type: String },
       update: { type: String },
       delete: { type: String },
-      cacheKey: { type: String },
     },
   },
   mixins: [permissionsMixin, userManagementMixin],
@@ -104,8 +105,6 @@ export default {
       permissions: this.row.permissions,
       projectRoles: null,
       availableRoles: null,
-      loading: true,
-      userType: 'oidc',
     };
   },
   beforeMount() {

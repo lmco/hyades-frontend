@@ -55,9 +55,16 @@ export default {
   data() {
     return {
       rowEvents: {
-        update: 'admin:managedusers:rowUpdate',
-        delete: 'admin:managedusers:rowDeleted',
-        cacheKey: 'manageduser',
+        userType: 'managed',
+        get cacheKey() {
+          return `${this.userType}user`;
+        },
+        get update() {
+          return `admin:${this.cacheKey}:rowUpdate`;
+        },
+        get delete() {
+          return `admin:${this.cacheKey}:rowDeleted`;
+        },
       },
       columns: [
         {
