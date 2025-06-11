@@ -98,6 +98,7 @@ export default {
       const requestBody = {
         [this._identifierField]: this.row[this._identifierField],
         teams: selections.map((team) => team.uuid),
+        userType: this.rowEvents.userType,
       };
       try {
         const response = await this.axios.put(endpoint, requestBody);
@@ -110,7 +111,7 @@ export default {
 
     _removeTeamMembership: async function (teamUUID) {
       const username = this.row[this._identifierField];
-      const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${username}/membership`;
+      const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${username}/membership?userType=${this.rowEvents.userType}`;
 
       this._userManagementMixin_checkReady();
       try {
@@ -130,6 +131,7 @@ export default {
       const requestBody = {
         [this._identifierField]: this.row[this._identifierField],
         permissions: selections.map((selection) => selection.name),
+        userType: this.rowEvents.userType,
       };
 
       try {
@@ -144,7 +146,7 @@ export default {
     _removePermission: async function (permission) {
       this._userManagementMixin_checkReady();
       const username = this.row[this._identifierField];
-      const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${username}`;
+      const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${username}?userType=${this.rowEvents.userType}`;
       try {
         const response = await this.axios.delete(url);
         this._successfulResponse_update(response);
