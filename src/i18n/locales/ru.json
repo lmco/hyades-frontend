@@ -958,7 +958,8 @@
     "workaround_available": "Доступно обходное решение",
     "x_trust_boundary": "Пересечение границы доверия",
     "available_roles_failed": "Не удалось получить доступные пользовательские роли",
-    "project_role_mappings_failed": "Не удалось получить сопоставления ролей проекта"
+    "project_role_mappings_failed": "Не удалось получить сопоставления ролей проекта",
+    "project_roles": "Проектные роли"
   },
   "operator": {
     "contains_all": "содержит все",

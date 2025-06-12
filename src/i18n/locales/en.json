@@ -806,6 +806,7 @@
     "project_reanalyze_tooltip": "Runs configured analyzers to detect vulnerabilities in this project's components. Will use any cached results that haven't expired yet",
     "project_retention_type": "Select retention type for projects",
     "project_role_mappings_failed": "Failed to retrieve project role mappings",
+    "project_roles": "Project Roles",
     "project_supplier_name_desc": "The organization that supplied the component that the project describes",
     "project_updated": "Project updated",
     "project_vulnerabilities": "Project Vulnerabilities",

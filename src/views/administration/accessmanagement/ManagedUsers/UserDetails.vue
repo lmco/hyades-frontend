@@ -97,7 +97,7 @@
     </b-row>
     <b-row class="expanded-row p-3" colspan="2">
       <div class="" style="width: 100%">
-        <label for="">{{ this.$t('message.projects') }}</label>
+        <label>{{ this.$t('message.project_roles') }}</label>
         <user-roles-table
           :parentContext="{ row, index }"
           :projectRoles="projectRoles"
