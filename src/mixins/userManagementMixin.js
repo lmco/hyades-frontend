@@ -18,7 +18,7 @@ export default {
       try {
         const cacheKey = `${this.rowEvents.cacheKey}:${this.row[this._identifierField]}`;
         if (sessionStorage.getItem(cacheKey)) {
-          const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}?type=${this.rowEvents.userType}&username=${this.row[this._identifierField]}`;
+          const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}?userType=${this.rowEvents.userType}&username=${this.row[this._identifierField]}`;
           const response = await this.axios.get(endpoint);
           sessionStorage.removeItem(cacheKey);
           EventBus.$emit(this.rowEvents.update, this.index, response.data);
