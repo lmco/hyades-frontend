@@ -123,8 +123,8 @@
     "github_advisories": "GitHub सलाह",
     "gitlab": "GitLab",
     "gitlab_application_id": "GitLab एप्लिकेशन आईडी",
-    "gitlab_url": "GitLab यूआरएल",
     "gitlab_jwks_path": "GitLab JWKS पथ",
+    "gitlab_url": "GitLab यूआरएल",
     "go_modules": "जाओ मॉड्यूल",
     "group": "समूह",
     "hackage": "Hackage",
@@ -806,6 +806,7 @@
     "project_reanalyze_tooltip": "इस परियोजना के घटकों में कमज़ोरियों का पता लगाने के लिए कॉन्फ़िगर किए गए विश्लेषक चलाता है। ऐसे सभी कैश किए गए परिणामों का उपयोग करेगा जिनकी समय-सीमा अभी समाप्त नहीं हुई है",
     "project_retention_type": "परियोजनाओं के लिए अवधारण प्रकार का चयन करें",
     "project_role_mappings_failed": "प्रोजेक्ट रोल मैपिंग को पुनः प्राप्त करने में विफल",
+    "project_roles": "प्रोजेक्ट रोल्स",
     "project_supplier_name_desc": "वह संगठन जिसने परियोजना में वर्णित घटक की आपूर्ति की",
     "project_updated": "परियोजना अद्यतन",
     "project_vulnerabilities": "परियोजना की कमज़ोरियाँ",
@@ -958,8 +959,7 @@
     "weakness": "कमजोरी",
     "will_not_fix": "ठीक नहीं होगा",
     "workaround_available": "वैकल्पिक उपाय उपलब्ध है",
-    "x_trust_boundary": "क्रॉस ट्रस्ट सीमा",
-    "project_roles": "प्रोजेक्ट रोल्स"
+    "x_trust_boundary": "क्रॉस ट्रस्ट सीमा"
   },
   "operator": {
     "contains_all": "इसमें सभी शामिल हैं",

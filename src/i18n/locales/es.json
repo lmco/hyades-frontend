@@ -123,8 +123,8 @@
     "github_advisories": "Avisos de GitHub",
     "gitlab": "GitLab",
     "gitlab_application_id": "ID de aplicación de GitLab",
-    "gitlab_url": "URL de GitLab",
     "gitlab_jwks_path": "Ruta JWKS de GitLab",
+    "gitlab_url": "URL de GitLab",
     "go_modules": "Ir a módulos",
     "group": "Grupo",
     "hackage": "Hackage",
@@ -806,6 +806,7 @@
     "project_reanalyze_tooltip": "Ejecuta analizadores configurados para detectar vulnerabilidades en los componentes de este proyecto. Utilizará cualquier resultado almacenado en caché que aún no haya caducado.",
     "project_retention_type": "Seleccionar tipo de retención para proyectos",
     "project_role_mappings_failed": "No se pudo recuperar mapeos de roles del proyecto",
+    "project_roles": "Roles de proyecto",
     "project_supplier_name_desc": "La organización que suministró el componente que describe el proyecto.",
     "project_updated": "Proyecto actualizado",
     "project_vulnerabilities": "Vulnerabilidades del proyecto",
@@ -958,8 +959,7 @@
     "weakness": "Debilidad",
     "will_not_fix": "No se reparara",
     "workaround_available": "Solución alternativa disponible",
-    "x_trust_boundary": "Cruzar el límite de confianza",
-    "project_roles": "Roles de proyecto"
+    "x_trust_boundary": "Cruzar el límite de confianza"
   },
   "operator": {
     "contains_all": "contiene todo",

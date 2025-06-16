@@ -123,8 +123,8 @@
     "github_advisories": "Doradztwo GitHuba",
     "gitlab": "GitLab",
     "gitlab_application_id": "Identyfikator aplikacji GitLab",
-    "gitlab_url": "Podstawowy adres URL GitLab",
     "gitlab_jwks_path": "Ścieżka JWKS GitLab",
+    "gitlab_url": "Podstawowy adres URL GitLab",
     "go_modules": "Przejdź do modułów",
     "group": "Grupa",
     "hackage": "Hackage",
@@ -806,6 +806,7 @@
     "project_reanalyze_tooltip": "Uruchamia skonfigurowane analizatory w celu wykrycia luk w komponentach tego projektu. Wykorzystane zostaną wyniki z pamięci podręcznej, które jeszcze nie wygasły",
     "project_retention_type": "Wybierz typ przechowywania projektów",
     "project_role_mappings_failed": "Nie udało się odzyskać mapowania ról projektu",
+    "project_roles": "Role projektu",
     "project_supplier_name_desc": "Organizacja, która dostarczyła komponent opisany w projekcie",
     "project_updated": "Projekt zaktualizowany",
     "project_vulnerabilities": "Luki w zabezpieczeniach projektu",
@@ -958,8 +959,7 @@
     "weakness": "Słabość",
     "will_not_fix": "Nie naprawi",
     "workaround_available": "Dostępne obejście",
-    "x_trust_boundary": "Granica zaufania krzyżowego",
-    "project_roles": "Role projektu"
+    "x_trust_boundary": "Granica zaufania krzyżowego"
   },
   "operator": {
     "contains_all": "zawiera wszystko",

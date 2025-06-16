@@ -123,8 +123,8 @@
     "github_advisories": "GitHub Advisories",
     "gitlab": "GitLab",
     "gitlab_application_id": "GitLab 应用程序 ID",
-    "gitlab_url": "GitLab URL",
     "gitlab_jwks_path": "GitLab JWKS 路径",
+    "gitlab_url": "GitLab URL",
     "go_modules": "Go Modules",
     "group": "组",
     "hackage": "Hackage",
@@ -806,6 +806,7 @@
     "project_reanalyze_tooltip": "运行配置的分析器来检测此项目组件中的漏洞。将使用尚未过期的任何缓存结果",
     "project_retention_type": "选择项目的保留类型",
     "project_role_mappings_failed": "无法检索项目角色映射",
+    "project_roles": "项目角色",
     "project_supplier_name_desc": "提供项目所述组件的组织",
     "project_updated": "项目已更新",
     "project_vulnerabilities": "项目漏洞",
@@ -958,8 +959,7 @@
     "weakness": "弱点",
     "will_not_fix": "不会修复",
     "workaround_available": "有解决方法",
-    "x_trust_boundary": "跨越信任边界",
-    "project_roles": "项目角色"
+    "x_trust_boundary": "跨越信任边界"
   },
   "operator": {
     "contains_all": "包含全部",

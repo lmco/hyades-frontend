@@ -122,7 +122,9 @@
     "github": "GitHub",
     "github_advisories": "GitHub Advisories",
     "gitlab": "GitLab",
+    "gitlab_application_id": "GitLab アプリケーション ID",
     "gitlab_jwks_path": "GitLab JWKS パス",
+    "gitlab_url": "GitLab ベース URL",
     "go_modules": "Go Modules",
     "group": "グループ",
     "hackage": "Hackage",
@@ -336,9 +338,7 @@
     "welcome_message_desc": "ユーザーがサインインする前に、Dependency-Track の開始ページに表示されるウェルカム メッセージをカスタマイズします。",
     "welcome_message_enable": "ウェルカムメッセージを有効にする",
     "workflow_step_timeout": "ステップタイムアウト",
-    "workflows": "ワークフロー",
-    "gitlab_application_id": "GitLab アプリケーション ID",
-    "gitlab_url": "GitLab ベース URL"
+    "workflows": "ワークフロー"
   },
   "condition": {
     "forbidden": "禁止 (403)",
@@ -806,6 +806,7 @@
     "project_reanalyze_tooltip": "設定されたアナライザーを実行して、このプロジェクトのコンポーネントの脆弱性を検出します。期限が切れていないキャッシュされた結果を使用します。",
     "project_retention_type": "プロジェクトの保持タイプを選択する",
     "project_role_mappings_failed": "プロジェクトロールマッピングの取得に失敗しました",
+    "project_roles": "プロジェクトの役割",
     "project_supplier_name_desc": "プロジェクトで説明されているコンポーネントを供給した組織",
     "project_updated": "プロジェクトが更新されました",
     "project_vulnerabilities": "プロジェクトの脆弱性",
@@ -958,8 +959,7 @@
     "weakness": "弱点",
     "will_not_fix": "修正しない",
     "workaround_available": "回避策あり",
-    "x_trust_boundary": "信頼境界を越える",
-    "project_roles": "プロジェクトの役割"
+    "x_trust_boundary": "信頼境界を越える"
   },
   "operator": {
     "contains_all": "すべてを含む",

@@ -123,8 +123,8 @@
     "github_advisories": "Повідомлення GitHub",
     "gitlab": "GitLab",
     "gitlab_application_id": "Ідентифікатор програми GitLab",
-    "gitlab_url": "URL-адреса GitLab",
     "gitlab_jwks_path": "Шлях JWKS GitLab",
+    "gitlab_url": "URL-адреса GitLab",
     "go_modules": "Go Modules",
     "group": "Група",
     "hackage": "Hackage",
@@ -806,6 +806,7 @@
     "project_reanalyze_tooltip": "Запускає налаштовані аналізатори для виявлення вразливостей у компонентах цього проекту. \nБуде використано будь-які кешовані результати, термін дії яких ще не минув",
     "project_retention_type": "Виберіть тип збереження для проектів",
     "project_role_mappings_failed": "Не вдалося отримати відображення ролей проекту",
+    "project_roles": "Ролі проекту",
     "project_supplier_name_desc": "Організація, яка постачала компонент, описаний у проекті",
     "project_updated": "Проект оновлений",
     "project_vulnerabilities": "Уразливості проекту",
@@ -958,8 +959,7 @@
     "weakness": "Слабкість",
     "will_not_fix": "Не виправить",
     "workaround_available": "Доступний обхідний шлях",
-    "x_trust_boundary": "Перетнути кордон довіри",
-    "project_roles": "Ролі проекту"
+    "x_trust_boundary": "Перетнути кордон довіри"
   },
   "operator": {
     "contains_all": "містить усе",

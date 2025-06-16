@@ -123,8 +123,8 @@
     "github_advisories": "Рекомендации GitHub",
     "gitlab": "GitLab",
     "gitlab_application_id": "Идентификатор приложения GitLab",
-    "gitlab_url": "URL GitLab",
     "gitlab_jwks_path": "Путь JWKS GitLab",
+    "gitlab_url": "URL GitLab",
     "go_modules": "Go Modules",
     "group": "Группа",
     "hackage": "Hackage",
@@ -208,6 +208,7 @@
     "password_updated": "Пароль обновлен",
     "perform_identification": "Выполнить идентификацию",
     "perform_test": "Выполнить тест",
+    "permission_removed": "Разрешение удалено",
     "permissions": "Разрешения",
     "permissions_updated": "Разрешения обновлены",
     "personal_access_token": "Персональный токен доступа",
@@ -337,8 +338,7 @@
     "welcome_message_desc": "Настройте приветственное сообщение, которое отображается на стартовой странице Dependency-Track перед входом пользователей.",
     "welcome_message_enable": "Включить приветственное сообщение",
     "workflow_step_timeout": "Тайм-аут шага",
-    "workflows": "Рабочие процессы",
-    "permission_removed": "Разрешение удалено"
+    "workflows": "Рабочие процессы"
   },
   "condition": {
     "forbidden": "Запрещено (403)",
@@ -409,6 +409,7 @@
     "authenticated": "Аутентифицировано",
     "author": "Автор",
     "authors": "Авторы",
+    "available_roles_failed": "Не удалось получить доступные пользовательские роли",
     "bom": "BOM",
     "bom_format": "Формат BOM",
     "bom_uploaded": "BOM загружен",
@@ -804,6 +805,8 @@
     "project_reanalyze_requested": "Запрашивался анализ уязвимостей проекта. Данные о уязвимостях проекта будут обновлены после завершения задачи переанализа.",
     "project_reanalyze_tooltip": "Запускает настроенные анализаторы для обнаружения уязвимостей в компонентах проекта. Используются кэшированные результаты, которые ещё не истекли",
     "project_retention_type": "Выберите тип хранения для проектов",
+    "project_role_mappings_failed": "Не удалось получить сопоставления ролей проекта",
+    "project_roles": "Проектные роли",
     "project_supplier_name_desc": "Организация, поставившая компонент, описанный в проекте",
     "project_updated": "Проект обновлён",
     "project_vulnerabilities": "Уязвимости проекта",
@@ -956,10 +959,7 @@
     "weakness": "Слабость",
     "will_not_fix": "Не будет исправлено",
     "workaround_available": "Доступно обходное решение",
-    "x_trust_boundary": "Пересечение границы доверия",
-    "available_roles_failed": "Не удалось получить доступные пользовательские роли",
-    "project_role_mappings_failed": "Не удалось получить сопоставления ролей проекта",
-    "project_roles": "Проектные роли"
+    "x_trust_boundary": "Пересечение границы доверия"
   },
   "operator": {
     "contains_all": "содержит все",
