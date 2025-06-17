@@ -99,7 +99,7 @@ export default {
   },
   data() {
     return {
-      user: this.row, // local cache
+      user: this.row,
       username: this.row.username,
       teams: this.row.teams,
       permissions: this.row.permissions,
