@@ -48,7 +48,7 @@
     <b-row class="expanded-row p-3" colspan="2">
       <div class="" style="width: 100%">
         <label>{{ this.$t('message.project_roles') }}</label>
-        <user-roles-table
+        <user-project-roles-table
           :parentContext="{ row, index }"
           :projectRoles="projectRoles"
           :availableRoles="availableRoles"
@@ -74,7 +74,7 @@ import i18n from '../../../../i18n';
 import permissionsMixin from '../../../../mixins/permissionsMixin';
 import userManagementMixin from '../../../../mixins/userManagementMixin';
 import ActionableListGroupItem from '../../../components/ActionableListGroupItem.vue';
-import UserRolesTable from '../../../components/UserRolesTable.vue';
+import UserProjectRolesTable from '../../../components/UserProjectRolesTable.vue';
 import SelectPermissionModal from '../SelectPermissionModal.vue';
 import SelectTeamModal from '../SelectTeamModal.vue';
 
@@ -95,7 +95,7 @@ export default {
     ActionableListGroupItem,
     SelectTeamModal,
     SelectPermissionModal,
-    UserRolesTable,
+    UserProjectRolesTable,
   },
   data() {
     return {

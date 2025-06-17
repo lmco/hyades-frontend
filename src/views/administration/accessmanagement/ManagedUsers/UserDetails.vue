@@ -98,7 +98,7 @@
     <b-row class="expanded-row p-3" colspan="2">
       <div class="" style="width: 100%">
         <label>{{ this.$t('message.project_roles') }}</label>
-        <user-roles-table
+        <user-project-roles-table
           :parentContext="{ row, index }"
           :projectRoles="projectRoles"
           :availableRoles="availableRoles"
@@ -132,7 +132,7 @@ import BInputGroupFormInput from '@/forms/BInputGroupFormInput';
 import userManagementMixin from '../../../../mixins/userManagementMixin';
 import EventBus from '../../../../shared/eventbus';
 import i18n from '../../../../i18n';
-import UserRolesTable from '../../../components/UserRolesTable.vue';
+import UserProjectRolesTable from '../../../components/UserProjectRolesTable.vue';
 
 export default {
   i18n,
@@ -154,7 +154,7 @@ export default {
     SelectPermissionModal,
     ChangePasswordModal,
     BInputGroupFormInput,
-    UserRolesTable,
+    UserProjectRolesTable,
   },
   data() {
     return {
