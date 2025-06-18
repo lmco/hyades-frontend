@@ -10,9 +10,49 @@ export default {
   created: function () {
     this._userManagementMixin_init();
   },
+  async mounted() {},
   data: () => ({ _userManagementMixin_ready: false }),
   methods: {
-    // -- public methods --
+    // -- init methods --
+    initFromSessionCache: async function () {
+      try {
+        const cacheKey = `${this.rowEvents.cacheKey}:${this.row[this._identifierField]}`;
+        if (sessionStorage.getItem(cacheKey)) {
+          const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}?userType=${this.rowEvents.userType}&username=${this.row[this._identifierField]}`;
+          const response = await this.axios.get(endpoint);
+          sessionStorage.removeItem(cacheKey);
+          EventBus.$emit(this.rowEvents.update, this.index, response.data);
+        }
+      } catch (error) {
+        const username = this.row[this._identifierField];
+        console.error(
+          `Failed to initialize from session cache for user "${username}" (type: ${this.rowEvents.userType}):`,
+        );
+        this.handleError(error);
+      }
+    },
+
+    loadUserManagementData: function () {
+      this.loadUserProjects(this.row[this._identifierField])
+        .then((projectRoles) => {
+          this.$set(this, 'projectRoles', projectRoles);
+        })
+        .catch((error) => {
+          this.handleError(error, tMsg);
+          const tMsg = this.$t('message.project_role_mappings_failed');
+          this.$set(this, 'projectRoles', []);
+        });
+
+      this.loadAvailableProjectRoles()
+        .then((availableRoles) => {
+          this.$set(this, 'availableRoles', availableRoles);
+        })
+        .catch((error) => {
+          this.$set(this, 'availableRoles', []);
+          const tMsg = this.$t('message.available_roles_failed');
+          this.handleError(error, tMsg);
+        });
+    },
 
     // Loads the user roles for a specific user. return data if targetField is null
     loadUserProjects: async function (username) {
@@ -36,7 +76,7 @@ export default {
       }
     },
 
-    // TODO: internal server error 500
+    // -- user management methods --
     _deleteUser: async function (endpoint) {
       this._userManagementMixin_checkReady();
       try {
@@ -58,6 +98,7 @@ export default {
       const requestBody = {
         [this._identifierField]: this.row[this._identifierField],
         teams: selections.map((team) => team.uuid),
+        userType: this.rowEvents.userType,
       };
       try {
         const response = await this.axios.put(endpoint, requestBody);
@@ -70,7 +111,7 @@ export default {
 
     _removeTeamMembership: async function (teamUUID) {
       const username = this.row[this._identifierField];
-      const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${username}/membership`;
+      const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER}/${username}/membership?userType=${this.rowEvents.userType}`;
 
       this._userManagementMixin_checkReady();
       try {
@@ -90,6 +131,7 @@ export default {
       const requestBody = {
         [this._identifierField]: this.row[this._identifierField],
         permissions: selections.map((selection) => selection.name),
+        userType: this.rowEvents.userType,
       };
 
       try {
@@ -104,7 +146,7 @@ export default {
     _removePermission: async function (permission) {
       this._userManagementMixin_checkReady();
       const username = this.row[this._identifierField];
-      const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${username}`;
+      const url = `${this.$api.BASE_URL}/${this.$api.URL_PERMISSION}/${permission.name}/user/${username}?userType=${this.rowEvents.userType}`;
       try {
         const response = await this.axios.delete(url);
         this._successfulResponse_update(response);
@@ -152,21 +194,28 @@ export default {
     },
 
     // -- utility methods --
-
-    handleError: function (error, toastMessageKey) {
-      const messageKey = toastMessageKey ?? 'condition.unsuccessful_action';
+    handleError: function (error, toastMessage) {
+      const msg = toastMessage ?? this.$t('condition.unsuccessful_action');
       console.error(error);
-      this.$toastr.w(this.$t(messageKey));
+      this.$toastr.e(msg);
     },
+
     _successfulResponse_update: function (response) {
-      if (this.rowEvents && this.rowEvents.update)
-        EventBus.$emit(this.rowEvents.update, this.index, response.data);
+      if (this.rowEvents?.update && this.rowEvents.cacheKey) {
+        // EventBus.$emit(this.rowEvents.update, this.index, response.data);
+        const cacheKey = `${this.rowEvents.cacheKey}:${response.data[this._identifierField]}`;
+        this.$set(this, 'user', response.data);
+        sessionStorage.setItem(cacheKey, new Date().toString());
+      }
       this.$toastr.s(this.$t('message.updated'));
     },
 
     _successfulResponse_delete: function () {
-      if (this.rowEvents && this.rowEvents.delete)
+      if (this.rowEvents?.delete && this.rowEvents.cacheKey) {
+        const cacheKey = `${this.rowEvents.cacheKey}:${[this._identifierField]}`;
+        sessionStorage.removeItem(cacheKey);
         EventBus.$emit(this.rowEvents.delete, this.index);
+      }
       this.$toastr.s(this.$t('admin.user_deleted'));
     },
 
@@ -196,7 +245,8 @@ export default {
       const rowEventsReady = !!(
         this.rowEvents &&
         this.rowEvents.update &&
-        this.rowEvents.delete
+        this.rowEvents.delete &&
+        this.rowEvents.cacheKey
       );
 
       if (!rowEventsReady) {
