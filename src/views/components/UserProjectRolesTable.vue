@@ -269,7 +269,7 @@ export default {
     // Remove project role
     onRemoveProjectRole(data) {
       const projectRole = {
-        role: data.item.role.uuid,
+        role: this.projectRolesCurrent[data.index].role.uuid,
         project: this.projectRolesCurrent[data.index].project.uuid,
       };
       this.$emit('removeProjectRole', projectRole);
