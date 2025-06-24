@@ -1,102 +1,98 @@
 <template>
   <b-card no-body :header="header">
-    <b-card-body>
+<b-card-header>
       <c-switch
-        id="isGitlabEnabled"
+        id="gitlabEnabled"
         color="primary"
         v-model="isGitlabEnabled"
         label
         v-bind="labelIcon"
       />{{ $t('admin.integration_gitlab_enable') }}
-      <br />
-      <c-switch
-        id="sbomEnabled"
-        color="primary"
-        v-model="sbomEnabled"
-        label
-        v-bind="labelIcon"
-      />{{ $t('admin.integration_gitlab_sbom_enable') }}
-      <br />
-      <c-switch
-        id="includeArchived"
-        color="primary"
-        v-model="includeArchived"
-        label
-        v-bind="labelIcon"
-      />{{ $t('admin.include_archived_projects') }} <br /><br />
-      <b-validated-input-group-form-input
-        id="gitlab-app-id"
-        :label="$t('admin.gitlab_application_id')"
-        input-group-size="mb-3"
-        rules="required"
-        type="password"
-        v-model="gitlabAppId"
-        lazy="true"
-      />
-      <b-validated-input-group-form-input
-        id="gitlab-url"
-        :label="$t('admin.gitlab_url')"
-        input-group-size="mb-3"
-        rules="required"
-        type="url"
-        v-model="gitlabUrl"
-        lazy="true"
-      />
-      <b-validated-input-group-form-input
-        id="gitlab-jwks-path"
-        :label="$t('admin.gitlab_jwks_path')"
-        input-group-size="mb-3"
-        rules="required"
-        type="url"
-        v-model="gitlabJwksPath"
-        lazy="true"
-      />
-      <br />
-      <c-switch
-        id="autoCreateProjects"
-        color="primary"
-        v-model="autoCreateProjects"
-        label
-        v-bind="labelIcon"
-      />{{ $t('admin.integration_auto_create_enabled') }}
-      <br />
-      <b-validated-input-group-form-input
-        id="audience"
-        label="Audience"
-        input-group-size="mb-3"
-        v-model="audience"
-        lazy="true"
-      />
-      <br />
-    </b-card-body>
+    </b-card-header>
+<b-card-body v-if="isGitlabEnabled"> 
+  <b-validated-input-group-form-input
+    id="gitlab-app-id"
+    :label="$t('admin.gitlab_application_id')"
+    input-group-size="mb-3"
+    rules="required"
+    type="password"
+    v-model="gitlabAppId"
+    lazy="true"
+  />
+  <b-validated-input-group-form-input
+    id="gitlab-url"
+    :label="$t('admin.gitlab_url')"
+    input-group-size="mb-3"
+    rules="required"
+    type="url"
+    v-model="gitlabUrl"
+    lazy="true"
+  />
+  <c-switch
+    id="includeArchived"
+    color="primary"
+    v-model="includeArchived"
+    label
+    v-bind="labelIcon"
+  />{{ $t('admin.include_archived_projects') }} <br /><br />
+  <h5>Topics</h5>
+  <div class="mb-2">
+    <ul style="width: 100%; list-style-type: none; padding: 0">
+      <li v-for="(topic, index) in topics" :key="index">
+        <actionable-list-group-item
+          :value="topic"
+          :delete-icon="true"
+          v-on:actionClicked="removeTopic(index)"
+        >
+          {{ topic }}
+        </actionable-list-group-item>
+      </li>
+      <li>
+        <actionable-list-group-item
+          :add-icon="true"
+          v-on:actionClicked="openAddTopicModal"
+        >
+        </actionable-list-group-item>
+      </li>
+    </ul>
+  </div>
+  <c-switch
+    id="sbomEnabled"
+    color="primary"
+    v-model="sbomEnabled"
+    label
+    v-bind="labelIcon"
+  />{{ $t('admin.integration_gitlab_sbom_enable') }}
+  <div v-if="sbomEnabled">
+    <c-switch
+      id="autoCreateProjects"
+      color="primary"
+      v-model="autoCreateProjects"
+      label
+      v-bind="labelIcon"
+    />{{ $t('admin.integration_auto_create_enabled') }}
+    <br />
+    <b-validated-input-group-form-input
+      id="audience"
+      label="Audience"
+      input-group-size="mb-3"
+      v-model="audience"
+      lazy="true"
+    />
+    <br />
+    <b-validated-input-group-form-input
+      id="gitlab-jwks-path"
+      :label="$t('admin.gitlab_jwks_path')"
+      input-group-size="mb-3"
+      rules="required"
+      type="url"
+      v-model="gitlabJwksPath"
+      lazy="true"
+    />
+  </div>
+</b-card-body>
     <b-card-footer>
       <b-row>
-        <b-col>
-          <h5>Topics</h5>
-          <div class="mb-2">
-            <ul style="width: 100%; list-style-type: none; padding: 0">
-              <li v-for="(topic, index) in topics" :key="index">
-                <actionable-list-group-item
-                  :value="topic"
-                  :delete-icon="true"
-                  v-on:actionClicked="removeTopic(index)"
-                >
-                  {{ topic }}
-                </actionable-list-group-item>
-              </li>
-              <li>
-                <actionable-list-group-item
-                  :add-icon="true"
-                  v-on:actionClicked="openAddTopicModal"
-                >
-                </actionable-list-group-item>
-              </li>
-            </ul>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
           <b-modal
             id="add-topic-modal"
             :title="$t('admin.create_topic')"
