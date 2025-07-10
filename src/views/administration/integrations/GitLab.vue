@@ -91,13 +91,9 @@
       </b-collapse>
 
       <b-card-footer>
-        <b-button
-          :disabled="!isGitlabEnabled"
-          variant="outline-primary"
-          class="px-5"
-          @click="saveChanges"
-          >{{ $t('message.update') }}</b-button
-        >
+        <b-button variant="outline-primary" class="px-5" @click="saveChanges">{{
+          $t('message.update')
+        }}</b-button>
       </b-card-footer>
     </b-card>
     <b-modal
