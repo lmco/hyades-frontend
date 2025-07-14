@@ -207,6 +207,8 @@
     "old_key_format": "Ten klucz API jest przestarzały i powinien zostać wkrótce zaktualizowany do dalszej funkcjonalności!",
     "oss_index": "Indeks Sonatype OSS",
     "osv_advisories": "Poradniki Google OSV (beta)",
+    "pagination_all": "Wszystko",
+    "pagination_per_page": "Na stronę: {Count}",
     "password": "Hasło (lub token dostępu)",
     "password_confirm": "Potwierdź hasło",
     "password_never_expires": "Hasło nigdy nie wygasa",
@@ -626,6 +628,7 @@
     "license_text": "Tekst licencji",
     "license_url": "Adres URL licencji",
     "licenses": "Licencje",
+    "loading": "Załadunek",
     "login": "Zaloguj sie",
     "login_desc": "Zaloguj się",
     "login_forbidden": "To konto jest nieaktywne lub zostało zawieszone",
@@ -964,7 +967,7 @@
     "weakness": "Słabość",
     "will_not_fix": "Nie naprawi",
     "workaround_available": "Dostępne obejście",
-    "x_trust_boundary": "Granica zaufania krzyżowego"
+    "x_trust_boundary": "Granica zaufan ia krzyżowego"
   },
   "operator": {
     "contains_all": "zawiera wszystko",

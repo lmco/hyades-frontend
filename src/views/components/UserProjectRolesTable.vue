@@ -5,11 +5,39 @@
       :busy="!projectRolesCurrent"
       :items="projectRolesCurrent"
       :fields="fields"
+      :per-page="perPage"
+      :current-page="currentPage"
+      :filter="mergedTableOptions.tableFilter ?? localTableFilter"
     >
       <template #table-busy>
         <div class="text-center text-primary my-2">
           <b-spinner class="align-middle"></b-spinner>
-          <strong>Loading...</strong>
+          <strong class="ml-2">{{ $t('message.loading') }}...</strong>
+        </div>
+      </template>
+
+      <template #head(project)="data">
+        <div class="w-100 d-flex justify-content-start align-items-center">
+          {{ data.label }}
+        </div>
+      </template>
+
+      <template v-if="shouldRenderInlineSearch" #head(role)="data">
+        <div
+          class="w-100 d-flex justify-content-between align-items-center"
+          style="gap: 0.625rem"
+        >
+          <div class="h-100">{{ data.label }}</div>
+          <b-form-input
+            class="w-50 ml-auto"
+            :placeholder="$t('message.search')"
+            v-model="localTableFilter"
+            :disabled="!!mergedTableOptions.tableFilter"
+          ></b-form-input>
+
+          <span class="action-icon" style="visibility: hidden"
+            ><span class="fa fa-trash-o"></span
+          ></span>
         </div>
       </template>
 
@@ -99,15 +127,47 @@
         <!-- Add Project Row -->
         <b-tr @click="showProjectModal">
           <b-td colspan="2">
-            <b-button
-              size="sm"
-              class="pull-right action-icon"
-              v-on:click="$emit('actionClicked')"
-              v-b-tooltip.hover
-              :title="$t('admin.add_project')"
-            >
-              <span class="fa fa-plus-square"></span>
-            </b-button>
+            <div class="d-flex justify-content-between align-items-center">
+              <!-- Pagination -->
+              <div
+                class="d-flex align-items-stretch"
+                v-if="shouldRenderPagination"
+                style="gap: 0.3125rem"
+              >
+                <b-pagination
+                  v-model="currentPage"
+                  :per-page="perPage"
+                  :total-rows="rows"
+                  first-number
+                  class="expanded-row-background m-0 h-100"
+                ></b-pagination>
+                <b-dropdown
+                  :text="paginationOptionsText"
+                  variant="outline-primary"
+                  size="sm"
+                >
+                  <b-dropdown-item
+                    v-for="option in paginationOptions"
+                    :key="option"
+                    @click="perPage = option"
+                    :active="perPage === option"
+                  >
+                    {{ option }}
+                  </b-dropdown-item>
+                  <b-dropdown-item @click="perPage = 0">All</b-dropdown-item>
+                </b-dropdown>
+              </div>
+              <!-- Empty space to align the button -->
+              <span v-else></span>
+              <b-button
+                size="sm"
+                class="pull-right action-icon"
+                v-b-tooltip.hover
+                :title="$t('admin.add_project')"
+              >
+                <span class="fa fa-plus-square"></span>
+              </b-button>
+            </div>
           </b-td>
         </b-tr>
       </template>
@@ -124,7 +184,59 @@
 import Multiselect from 'vue-multiselect';
 import SelectProjectModal from '../portfolio/projects/SelectProjectModal.vue';
 import i18n from '../../i18n';
+import _ from 'lodash';
 
+const defaultTableOptions = {
+  perPageOptions: null, // e.g [5, 10, 25], null to disable dropdown
+  perPageDefault: 7,
+  showPagination: true,
+  tableFilter: null, // should be a string
+  inlineSearch: true,
+};
+
+/**
+ * Props for UserProjectRolesTable
+ *
+ * @prop {Object} parentContext - Required. Contains context info for the parent row.
+ *   - row: {Object} The parent row data (must include at least a 'username' property).
+ *   - index: {Number} The index of the parent row.
+ * @prop {Array<Object>} projectRoles - Required. List of project-role mappings for the user.
+ *   Each item should have the following structure:
+ *   {
+ *     user: {
+ *       username: String, // The username of the user
+ *       // ...other user fields
+ *     },
+ *     project: {
+ *       uuid: String,     // Unique project identifier
+ *       name: String,     // Project name
+ *       // ...other project fields (e.g., active, classifier, etc.)
+ *     },
+ *     role: {
+ *       uuid: String,     // Unique role identifier
+ *       name: String,     // Role name
+ *       permissions: Array, // (optional) List of permissions
+ *       // ...other role fields
+ *     }
+ *   }
+ * @prop {Array<Object>} availableRoles - Required. List of available roles to assign.
+ *   Each item should have the following structure:
+ *   {
+ *     uuid: String,         // Unique role identifier
+ *     name: String,         // Role name
+ *     permissions: Array<{  // (optional) List of permissions for the role
+ *       name: String,       // Permission name
+ *       description: String // Permission description
+ *     }>
+ *     // ...other role fields
+ *   }
+ * @prop {Object} tableOptions - Optional. Table configuration options (pagination, filtering, etc).
+ *   - perPageOptions: Array of numbers for per-page dropdown (optional)
+ *   - perPageDefault: Number, default rows per page (optional)
+ *   - showPagination: Boolean, show/hide pagination (optional)
+ *   - tableFilter: String, initial filter value (optional)
+ *   - inlineSearch: Boolean, enable inline search (optional)
+ */
 export default {
   i18n,
   props: {
@@ -141,14 +253,38 @@ export default {
     },
     projectRoles: { required: true, default: null },
     availableRoles: { required: true, default: null },
+    tableOptions: {
+      type: Object,
+      default: () => defaultTableOptions,
+      validator(value) {
+        return (
+          typeof value === 'object' &&
+          (!value.perPageOptions ||
+            (Array.isArray(value.perPageOptions) &&
+              value.perPageOptions.every(
+                (opt) => typeof opt === 'number' && opt > 0,
+              ))) && // must be array of positive numbers
+          (!value.perPageDefault || typeof value.perPageDefault === 'number') &&
+          (!value.showPagination ||
+            typeof value.showPagination === 'boolean') &&
+          (!value.tableFilter || typeof value.tableFilter === 'string') &&
+          (!value.inlineSearch || typeof value.inlineSearch === 'boolean')
+        );
+      },
+    },
   },
   mixins: [],
   components: { Multiselect, SelectProjectModal },
   data() {
     return {
       // multiselect mutates its model which will cause violation errors, copy is requireds
-      projectRolesCurrent: [], // mutable copy for display
+      projectRolesCurrent: null, // mutable copy for display
       projectRolesPrototype: [], // for adding new project roles
+      currentPage: 1,
+      previousPage: null,
+      searchActive: false,
+      perPage: null,
+      localTableFilter: null,
       fields: [
         {
           key: 'project',
@@ -167,10 +303,71 @@ export default {
       ],
     };
   },
+  created() {
+    const pageOptions = this.mergedTableOptions.perPageOptions;
+    this.perPage = pageOptions
+      ? pageOptions[0]
+      : this.mergedTableOptions.perPageDefault;
+  },
+  mounted() {
+    console.log(this.availableRoles[0]);
+  },
+  computed: {
+    mergedTableOptions() {
+      return { ...defaultTableOptions, ...this.tableOptions };
+    },
+    rows() {
+      return this.projectRolesCurrent?.length ?? 0;
+    },
+    paginationOptions() {
+      const options = this.mergedTableOptions.perPageOptions;
+      return (
+        options ??
+        _.map(
+          new Array(3),
+          (_, i) => (i + 1) * this.mergedTableOptions.perPageDefault,
+        )
+      );
+    },
+    paginationOptionsText() {
+      return this.$t('admin.pagination_per_page', {
+        count: this.perPage || this.$t('admin.pagination_all'),
+      });
+    },
+    shouldRenderPagination() {
+      return (
+        this.mergedTableOptions.showPagination &&
+        this.mergedTableOptions.perPageDefault < this.rows
+      );
+    },
+    shouldRenderInlineSearch() {
+      return (
+        this.mergedTableOptions.inlineSearch && this.shouldRenderPagination
+      );
+    },
+  },
   watch: {
+    searchActive(newVal) {
+      if (newVal) {
+        this.searchActive = true;
+        this.previousPage = this.currentPage;
+        this.currentPage = 1; // reset to first page on filter change
+        return;
+      }
+      // safeguard against invalid page when filter is cleared
+      const maxPage = Math.ceil(this.rows / this.perPage) || 1;
+      while (this.previousPage > maxPage) this.previousPage -= 1;
+      this.currentPage = this.previousPage;
+    },
     projectRoles(newValue) {
       if (!newValue) return;
       this.assignProjectMapping(newValue);
+    },
+    localTableFilter(newVal, oldVal) {
+      this.handleTableFilter(newVal, oldVal);
+    },
+    'mergedTableOptions.tableFilter'(newVal, oldVal) {
+      this.handleTableFilter(newVal, oldVal);
     },
   },
   methods: {
@@ -181,6 +378,11 @@ export default {
         disabled: false,
         loading: false,
       }));
+    },
+
+    handleTableFilter(newVal, oldVal) {
+      if (newVal === oldVal) return;
+      this.searchActive = !_.isEmpty(newVal);
     },
 
     createPrototypeMapping(projectSelections) {
@@ -217,8 +419,8 @@ export default {
 
     // Add project role
     onRolePrototypeSelection(prototype, id) {
-      const role = prototype.uuid;
-      const project = this.projectRolesPrototype[id].project.uuid;
+      const role = prototype;
+      const project = this.projectRolesPrototype[id].project;
       this.projectRolesPrototype[id].loading = true;
       this.projectRolesPrototype[id].disabled = true;
       const error = (error) => {
@@ -234,9 +436,13 @@ export default {
       // changes reflect when projectRoles is updated by parent
       // we just need to delete the prototype then signal the parent
       const success = () => {
-        this.removeProjectPrototype(project);
+        this.removeProjectPrototype(project.uuid);
       };
-      this.$emit('addProjectRole', { role, project }, { success, error });
+      this.$emit(
+        'addProjectRole',
+        { role: role.uuid, project: project.uuid },
+        { success, error },
+      );
     },
 
     // Update/change project role
@@ -281,7 +487,10 @@ export default {
       this.$emit('removeProjectRole', projectRole);
     },
 
-    showProjectModal() {
+    showProjectModal(event) {
+      if (event.target.classList.contains('page-link')) return;
+      if (event.target.classList.contains('page-item')) return;
+      if (event.target.classList.contains('dropdown-item')) return;
       this.$root.$emit('bv::show::modal', 'selectProjectModal');
     },
 
@@ -300,6 +509,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .pagination {
+  border: 1px solid var(--primary);
+  box-sizing: border-box;
+}
+
+::v-deep .pagination .page-link,
+::v-deep .pagination .page-item {
+  border: none !important; // Remove inner borders
+}
+
 ::v-deep(.project-column) {
   white-space: no-wrap;
   text-wrap: wrap;
