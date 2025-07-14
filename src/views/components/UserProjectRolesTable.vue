@@ -309,9 +309,6 @@ export default {
       ? pageOptions[0]
       : this.mergedTableOptions.perPageDefault;
   },
-  mounted() {
-    console.log(this.availableRoles[0]);
-  },
   computed: {
     mergedTableOptions() {
       return { ...defaultTableOptions, ...this.tableOptions };
