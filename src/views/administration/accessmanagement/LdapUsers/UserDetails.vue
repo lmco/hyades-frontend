@@ -48,12 +48,22 @@
       </b-col>
     </b-row>
     <b-row class="expanded-row p-3" colspan="2">
-      <div class="" style="width: 100%">
-        <label>{{ this.$t('message.project_roles') }}</label>
+      <div class="w-100">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <label class="m-0">{{ this.$t('message.project_roles') }}</label>
+          <b-form-input
+            id="project-roles-table-seaerch"
+            type="search"
+            class="w-25"
+            :placeholder="$t('message.search')"
+            v-model="tableFilter"
+          ></b-form-input>
+        </div>
         <user-project-roles-table
-          :parentContext="{ row, index }"
+          :username="username"
           :projectRoles="projectRoles"
           :availableRoles="availableRoles"
+          :tableOptions="{ tableFilter }"
           @addProjectRole="addProjectRole"
           @updateProjectRole="updateProjectRole"
           @removeProjectRole="removeProjectRole"
@@ -106,6 +116,7 @@ export default {
       permissions: this.row.permissions,
       projectRoles: null,
       availableRoles: null,
+      tableFilter: '',
     };
   },
   beforeMount() {

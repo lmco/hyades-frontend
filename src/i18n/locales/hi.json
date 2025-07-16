@@ -208,6 +208,7 @@
     "oss_index": "सोनाटाइप ओएसएस सूचकांक",
     "osv_advisories": "Google OSV सलाह (बीटा)",
     "pagination_all": "सभी",
+    "pagination_current": "{start} से {end} के {total}",
     "pagination_per_page": "प्रति पृष्ठ: {गिनती}",
     "password": "पासवर्ड (या एक्सेस टोकन)",
     "password_confirm": "पासवर्ड की पुष्टि कीजिये",

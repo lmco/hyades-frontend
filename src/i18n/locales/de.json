@@ -208,6 +208,7 @@
     "oss_index": "Sonatype OSS-Index",
     "osv_advisories": "Google OSV Advisories (Beta)",
     "pagination_all": "Alle",
+    "pagination_current": "{start} bis {end} von {total}",
     "pagination_per_page": "Pro Seite: {count}",
     "password": "Passwort (oder Zugriffstoken)",
     "password_confirm": "Bestätige das Passwort",

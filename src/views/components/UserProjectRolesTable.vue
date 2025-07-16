@@ -1,180 +1,197 @@
 <!-- Table containing the users participating project and their respective roles -->
 <template>
   <div>
-    <b-table
-      :busy="!projectRolesCurrent"
-      :items="projectRolesCurrent"
-      :fields="fields"
-      :per-page="perPage"
-      :current-page="currentPage"
-      :filter="mergedTableOptions.tableFilter ?? localTableFilter"
-    >
-      <template #table-busy>
-        <div class="text-center text-primary my-2">
-          <b-spinner class="align-middle"></b-spinner>
-          <strong class="ml-2">{{ $t('message.loading') }}...</strong>
-        </div>
-      </template>
+    <div class="mb-3">
+      <b-table
+        :busy="!projectRolesCurrent"
+        :items="projectRolesCurrent"
+        :fields="fields"
+        :per-page="perPage === 0 ? rows : perPage"
+        :current-page="currentPage"
+        :filter="mergedTableOptions.tableFilter ?? localTableFilter"
+      >
+        <template #table-busy>
+          <div class="text-center text-primary my-2">
+            <b-spinner class="align-middle"></b-spinner>
+            <strong class="ml-2">{{ $t('message.loading') }}...</strong>
+          </div>
+        </template>
 
-      <template #head(project)="data">
-        <div class="w-100 d-flex justify-content-start align-items-center">
-          {{ data.label }}
-        </div>
-      </template>
+        <template #head(project)="data">
+          <div class="w-100 d-flex justify-content-start align-items-center">
+            {{ data.label }}
+          </div>
+        </template>
 
-      <template v-if="shouldRenderInlineSearch" #head(role)="data">
-        <div
-          class="w-100 d-flex justify-content-between align-items-center"
-          style="gap: 0.625rem"
-        >
-          <div class="h-100">{{ data.label }}</div>
-          <b-form-input
-            class="w-50 ml-auto"
-            :placeholder="$t('message.search')"
-            v-model="localTableFilter"
-            :disabled="!!mergedTableOptions.tableFilter"
-          ></b-form-input>
-
-          <span class="action-icon" style="visibility: hidden"
-            ><span class="fa fa-trash-o"></span
-          ></span>
-        </div>
-      </template>
-
-      <!-- Project Column -->
-      <template #cell(project)="data">
-        <div
-          v-b-tooltip.hover
-          :title="data.item.project.name"
-          class="text-ellipsis"
-        >
-          {{ data.item.project.name }}
-        </div>
-      </template>
-
-      <!-- Role column  -->
-      <template #cell(role)="data">
-        <div
-          class="d-flex justify-content-between align-items-center"
-          style="gap: 0.625rem"
-        >
-          <multiselect
-            v-if="availableRoles"
-            v-model="data.item.role"
-            :options="availableRoles"
-            :id="data.index"
-            :allow-empty="false"
-            @input="(selectedRole) => onRoleSelection(data, selectedRole)"
-            :deselect-label="$t('admin.multiselect_remove_role')"
-            :placeholder="$t('admin.select_role')"
-            :open-direction="isLastRow(data.index, false) ? 'top' : 'auto'"
-            :disabled="data.item.disabled"
-            :loading="data.item.loading"
-            label="name"
-            track-by="uuid"
-            class="multiselect"
-          ></multiselect>
-          <b-spinner v-else small variant="primary"></b-spinner>
-          <b-button
-            small
-            class="action-icon"
-            @click="onRemoveProjectRole(data)"
-            v-b-tooltip.hover
-            :title="$t('admin.remove_role')"
+        <template v-if="shouldRenderInlineSearch" #head(role)="data">
+          <div
+            class="w-100 d-flex justify-content-between align-items-center"
+            style="gap: 0.625rem"
           >
-            <span class="fa fa-trash-o"></span>
-          </b-button>
-        </div>
-      </template>
+            <div class="h-100">{{ data.label }}</div>
+            <b-form-input
+              class="w-50 ml-auto"
+              :placeholder="$t('message.search')"
+              v-model="localTableFilter"
+              :disabled="!!mergedTableOptions.tableFilter"
+            ></b-form-input>
 
-      <!-- Footer -->
-      <template #custom-foot="">
-        <!-- Project Prototyper -->
-        <b-tr v-for="(prototype, index) in projectRolesPrototype" :key="index">
-          <b-td>{{ prototype.project.name }} <br /> </b-td>
-          <b-td>
-            <div
-              class="d-flex justify-content-between align-items-center"
-              style="gap: 0.625rem"
+            <span class="action-icon" style="visibility: hidden"
+              ><span class="fa fa-trash-o"></span
+            ></span>
+          </div>
+        </template>
+
+        <!-- Project Column -->
+        <template #cell(project)="data">
+          <div
+            v-b-tooltip.hover
+            :title="data.item.project.name"
+            class="text-ellipsis"
+          >
+            {{ data.item.project.name }}
+          </div>
+        </template>
+
+        <!-- Role column  -->
+        <template #cell(role)="data">
+          <div
+            class="d-flex justify-content-between align-items-center"
+            style="gap: 0.625rem"
+          >
+            <multiselect
+              v-if="availableRoles"
+              v-model="data.item.role"
+              :options="availableRoles"
+              :id="data.index"
+              :allow-empty="false"
+              @input="(selectedRole) => onRoleSelection(data, selectedRole)"
+              :deselect-label="$t('admin.multiselect_remove_role')"
+              :placeholder="$t('admin.select_role')"
+              :open-direction="isLastRow(data.index, false) ? 'top' : 'auto'"
+              :disabled="data.item.disabled"
+              :loading="data.item.loading"
+              label="name"
+              track-by="uuid"
+              class="multiselect"
+            ></multiselect>
+            <b-spinner v-else small variant="primary"></b-spinner>
+            <b-button
+              small
+              class="action-icon"
+              @click="onRemoveProjectRole(data)"
+              v-b-tooltip.hover
+              :title="$t('admin.remove_role')"
             >
-              <multiselect
-                v-model="prototype.role"
-                :placeholder="$t('admin.select_role')"
-                :options="availableRoles"
-                :id="index"
-                :disabled="prototype.disabled"
-                :open-direction="isLastRow(index, true) ? 'top' : 'auto'"
-                @input="onRolePrototypeSelection"
-                label="name"
-                track-by="uuid"
-                class="multiselect"
-              ></multiselect>
-              <b-button
-                v-if="!prototype.loading"
-                small
-                class="action-icon"
-                @click="removeProjectPrototype(prototype.project.uuid)"
-                v-b-tooltip.hover
-                :title="$t('message.cancel')"
-              >
-                <i class="fa fa-tasks"></i>
-              </b-button>
-              <b-spinner v-else small variant="primary"></b-spinner>
-            </div>
-          </b-td>
-        </b-tr>
+              <span class="fa fa-trash-o"></span>
+            </b-button>
+          </div>
+        </template>
 
-        <!-- Add Project Row -->
-        <b-tr @click="showProjectModal">
-          <b-td colspan="2">
-            <div class="d-flex justify-content-between align-items-center">
-              <!-- Pagination -->
+        <!-- Footer -->
+        <template #custom-foot="">
+          <!-- Project Prototyper -->
+          <b-tr
+            v-for="(prototype, index) in projectRolesPrototype"
+            :key="index"
+          >
+            <b-td>{{ prototype.project.name }} <br /> </b-td>
+            <b-td>
               <div
-                class="d-flex align-items-stretch"
-                v-if="shouldRenderPagination"
-                style="gap: 0.3125rem"
+                class="d-flex justify-content-between align-items-center"
+                style="gap: 0.625rem"
               >
-                <b-pagination
-                  v-model="currentPage"
-                  :per-page="perPage"
-                  :total-rows="rows"
-                  first-number
-                  class="expanded-row-background m-0 h-100"
-                ></b-pagination>
-                <b-dropdown
-                  :text="paginationOptionsText"
-                  variant="outline-primary"
-                  size="sm"
+                <multiselect
+                  v-model="prototype.role"
+                  :placeholder="$t('admin.select_role')"
+                  :options="availableRoles"
+                  :id="index"
+                  :disabled="prototype.disabled"
+                  :open-direction="isLastRow(index, true) ? 'top' : 'auto'"
+                  @input="onRolePrototypeSelection"
+                  label="name"
+                  track-by="uuid"
+                  class="multiselect"
+                ></multiselect>
+                <b-button
+                  v-if="!prototype.loading"
+                  small
+                  class="action-icon"
+                  @click="removeProjectPrototype(prototype.project.uuid)"
+                  v-b-tooltip.hover
+                  :title="$t('message.cancel')"
                 >
-                  <b-dropdown-item
-                    v-for="option in paginationOptions"
-                    :key="option"
-                    @click="perPage = option"
-                    :active="perPage === option"
-                  >
-                    {{ option }}
-                  </b-dropdown-item>
-                  <b-dropdown-item @click="perPage = 0">All</b-dropdown-item>
-                </b-dropdown>
+                  <i class="fa fa-tasks"></i>
+                </b-button>
+                <b-spinner v-else small variant="primary"></b-spinner>
               </div>
-              <!-- Empty space to align the button -->
-              <span v-else></span>
-              <b-button
-                size="sm"
-                class="pull-right action-icon"
-                v-b-tooltip.hover
-                :title="$t('admin.add_project')"
-              >
-                <span class="fa fa-plus-square"></span>
-              </b-button>
-            </div>
-          </b-td>
-        </b-tr>
-      </template>
-    </b-table>
+            </b-td>
+          </b-tr>
+
+          <!-- Add Project Row -->
+          <b-tr @click="showProjectModal">
+            <b-td colspan="2">
+              <div class="ml-auto">
+                <b-button
+                  size="sm"
+                  class="pull-right action-icon"
+                  v-b-tooltip.hover
+                  :title="$t('admin.add_project')"
+                >
+                  <span class="fa fa-plus-square"></span>
+                </b-button>
+              </div>
+            </b-td>
+          </b-tr>
+        </template>
+      </b-table>
+    </div>
+
+    <!-- Pagination -->
+    <div
+      class="w-100 px-1 d-flex justify-content-between align-items-stretch"
+      style="gap: 0.3125rem"
+      v-if="shouldRenderPagination"
+    >
+      <div
+        class="d-flex justify-content-center align-items-center"
+        style="gap: 0.3125rem"
+      >
+        <b-dropdown
+          :text="paginationOptionsText"
+          variant="outline-primary"
+          size="sm"
+          class="h-100"
+        >
+          <b-dropdown-item
+            v-for="option in paginationOptions"
+            :key="option"
+            @click="perPage = option"
+            :active="perPage === option"
+          >
+            {{ option }}
+          </b-dropdown-item>
+
+          <b-dropdown-item @click="perPage = 0" :active="perPage === 0">{{
+            $t('admin.pagination_all')
+          }}</b-dropdown-item>
+        </b-dropdown>
+        <span v-if="perPage !== 0" class="text-center">{{
+          currentPageText
+        }}</span>
+      </div>
+      <b-pagination
+        :style="{ visibility: perPage === 0 ? 'hidden' : 'visible' }"
+        v-model="currentPage"
+        :per-page="perPage"
+        :total-rows="rows"
+        first-number
+        class="m-0 h-100"
+      ></b-pagination>
+    </div>
 
     <select-project-modal
-      :username="parentContext.row.username"
+      :username="username"
       @selection="createPrototypeMapping"
     />
   </div>
@@ -191,15 +208,13 @@ const defaultTableOptions = {
   perPageDefault: 7,
   showPagination: true,
   tableFilter: null, // should be a string
-  inlineSearch: true,
+  inlineSearch: false,
 };
 
 /**
  * Props for UserProjectRolesTable
  *
- * @prop {Object} parentContext - Required. Contains context info for the parent row.
- *   - row: {Object} The parent row data (must include at least a 'username' property).
- *   - index: {Number} The index of the parent row.
+ * @prop {String} username - Required. The username of the user whose project roles are being managed.
  * @prop {Array<Object>} projectRoles - Required. List of project-role mappings for the user.
  *   Each item should have the following structure:
  *   {
@@ -240,17 +255,7 @@ const defaultTableOptions = {
 export default {
   i18n,
   props: {
-    parentContext: {
-      type: Object,
-      required: true,
-      validator(value) {
-        return (
-          typeof value === 'object' &&
-          Object.prototype.hasOwnProperty.call(value, 'row') &&
-          Object.prototype.hasOwnProperty.call(value, 'index')
-        );
-      },
-    },
+    username: { type: String, required: true },
     projectRoles: { required: true, default: null },
     availableRoles: { required: true, default: null },
     tableOptions: {
@@ -342,19 +347,36 @@ export default {
         this.mergedTableOptions.inlineSearch && this.shouldRenderPagination
       );
     },
+    currentPageText() {
+      /* {{ perPage * currentPage - (perPage - 1) }} to
+          {{ perPage * currentPage }} of {{ rows }} */
+      const start = (this.currentPage - 1) * this.perPage + 1;
+      const end = Math.min(this.currentPage * this.perPage, this.rows);
+      return this.$t('admin.pagination_current', {
+        start,
+        end,
+        total: this.rows,
+      });
+    },
   },
   watch: {
     searchActive(newVal) {
+      // safeguard against invalid page when filter is cleared
       if (newVal) {
         this.searchActive = true;
         this.previousPage = this.currentPage;
-        this.currentPage = 1; // reset to first page on filter change
+        this.currentPage = 1;
         return;
       }
-      // safeguard against invalid page when filter is cleared
       const maxPage = Math.ceil(this.rows / this.perPage) || 1;
       while (this.previousPage > maxPage) this.previousPage -= 1;
       this.currentPage = this.previousPage;
+    },
+    rows(newVal) {
+      // safeguard against invalid page when rows change
+      const maxPage = Math.ceil(newVal / this.perPage) || 1;
+      if (this.currentPage <= maxPage) return;
+      this.currentPage = maxPage;
     },
     projectRoles(newValue) {
       if (!newValue) return;
@@ -440,6 +462,18 @@ export default {
         { role: role.uuid, project: project.uuid },
         { success, error },
       );
+
+      /* this.projectRolesPrototype.forEach((p) => {
+        const randomRole =
+          this.availableRoles[
+            Math.floor(Math.random() * this.availableRoles.length)
+          ];
+        this.$emit(
+          'addProjectRole',
+          { role: randomRole.uuid, project: p.project.uuid },
+          { success, error },
+        );
+      }); */
     },
 
     // Update/change project role
@@ -506,9 +540,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/scss/_variables.scss';
+
 ::v-deep .pagination {
   border: 1px solid var(--primary);
   box-sizing: border-box;
+  border-radius: 0.2rem;
 }
 
 ::v-deep .pagination .page-link,
@@ -516,22 +553,23 @@ export default {
   border: none !important; // Remove inner borders
 }
 
-::v-deep(.project-column) {
+::v-deep .project-column {
   white-space: no-wrap;
   text-wrap: wrap;
   max-width: 12.5rem;
 }
 
-::v-deep(.project-column span) {
+::v-deep .project-column span {
   text-overflow: ellipsis;
 }
 
-::v-deep(.role-column) {
+::v-deep .role-column {
   width: 60%;
 }
 
-::v-deep(.header-row) {
+::v-deep .header-row {
   padding: 0.75rem !important;
+  align-content: center;
 }
 
 .multiselect {
@@ -566,7 +604,12 @@ export default {
   color: var(--primary);
 }
 
-::v-deep(.text-ellipsis) {
+.pagination-row {
+  // border-top: 1px solid var(--light);
+  background-color: $grey-800;
+}
+
+::v-deep .text-ellipsis {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

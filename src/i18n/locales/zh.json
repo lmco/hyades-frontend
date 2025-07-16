@@ -208,6 +208,7 @@
     "oss_index": "OSS 索引",
     "osv_advisories": "Google OSV Advisory (Beta)",
     "pagination_all": "全部",
+    "pagination_current": "{start} 至 {end}，共 {total} 条",
     "pagination_per_page": "每页：{count}",
     "password": "密码（或访问令牌）",
     "password_confirm": "确认密码",

@@ -208,6 +208,7 @@
     "oss_index": "Sonatype OSS インデックス",
     "osv_advisories": "Google OSV アドバイザリ (ベータ版)",
     "pagination_all": "全て",
+    "pagination_current": "{start} から {end} の {total}",
     "pagination_per_page": "ページごと：{count}",
     "password": "パスワード（またはアクセストークン）",
     "password_confirm": "パスワードの再入力",

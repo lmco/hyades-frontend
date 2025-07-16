@@ -208,6 +208,7 @@
     "oss_index": "Sonatype OSS Index",
     "osv_advisories": "Рекомендации Google OSV (бета)",
     "pagination_all": "Все",
+    "pagination_current": "{start} to {end} of {total}",
     "pagination_per_page": "За страницу: {count}",
     "password": "Пароль (или токен доступа)",
     "password_confirm": "Подтвердите пароль",
