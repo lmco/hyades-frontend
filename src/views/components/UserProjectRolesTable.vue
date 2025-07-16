@@ -348,8 +348,6 @@ export default {
       );
     },
     currentPageText() {
-      /* {{ perPage * currentPage - (perPage - 1) }} to
-          {{ perPage * currentPage }} of {{ rows }} */
       const start = (this.currentPage - 1) * this.perPage + 1;
       const end = Math.min(this.currentPage * this.perPage, this.rows);
       return this.$t('admin.pagination_current', {
@@ -462,18 +460,6 @@ export default {
         { role: role.uuid, project: project.uuid },
         { success, error },
       );
-
-      /* this.projectRolesPrototype.forEach((p) => {
-        const randomRole =
-          this.availableRoles[
-            Math.floor(Math.random() * this.availableRoles.length)
-          ];
-        this.$emit(
-          'addProjectRole',
-          { role: randomRole.uuid, project: p.project.uuid },
-          { success, error },
-        );
-      }); */
     },
 
     // Update/change project role
@@ -518,10 +504,7 @@ export default {
       this.$emit('removeProjectRole', projectRole);
     },
 
-    showProjectModal(event) {
-      if (event.target.classList.contains('page-link')) return;
-      if (event.target.classList.contains('page-item')) return;
-      if (event.target.classList.contains('dropdown-item')) return;
+    showProjectModal() {
       this.$root.$emit('bv::show::modal', 'selectProjectModal');
     },
 
@@ -602,11 +585,6 @@ export default {
 
 .action-icon .fa-plus-square {
   color: var(--primary);
-}
-
-.pagination-row {
-  // border-top: 1px solid var(--light);
-  background-color: $grey-800;
 }
 
 ::v-deep .text-ellipsis {
