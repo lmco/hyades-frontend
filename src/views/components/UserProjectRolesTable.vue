@@ -88,9 +88,9 @@
           </div>
         </template>
 
-        <!-- Footer -->
+        <!-- Table Footer -->
         <template #custom-foot="">
-          <!-- Project Prototyper -->
+          <!-- Project Prototype Row(s) -->
           <b-tr
             v-for="(prototype, index) in projectRolesPrototype"
             :key="index"
@@ -198,19 +198,6 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect';
-import SelectProjectModal from '../portfolio/projects/SelectProjectModal.vue';
-import i18n from '../../i18n';
-import _ from 'lodash';
-
-const defaultTableOptions = {
-  perPageOptions: null, // e.g [5, 10, 25], null to disable dropdown
-  perPageDefault: 7,
-  showPagination: true,
-  tableFilter: null, // should be a string
-  inlineSearch: false,
-};
-
 /**
  * Props for UserProjectRolesTable
  *
@@ -246,12 +233,61 @@ const defaultTableOptions = {
  *     // ...other role fields
  *   }
  * @prop {Object} tableOptions - Optional. Table configuration options (pagination, filtering, etc).
- *   - perPageOptions: Array of numbers for per-page dropdown (optional)
- *   - perPageDefault: Number, default rows per page (optional)
+ *   - paginationOptions: Number or array of numbers for per-page dropdown (optional)
+ *      ignored if showPagination is false
  *   - showPagination: Boolean, show/hide pagination (optional)
  *   - tableFilter: String, initial filter value (optional)
  *   - inlineSearch: Boolean, enable inline search (optional)
  */
+
+import Multiselect from 'vue-multiselect';
+import SelectProjectModal from '../portfolio/projects/SelectProjectModal.vue';
+import i18n from '../../i18n';
+import _ from 'lodash';
+
+const defaultTableOptions = {
+  paginationOptions: [5, 10, 25],
+  showPagination: true,
+  tableFilter: null,
+  inlineSearch: false,
+};
+
+const tableOptionsValidator = (value) => {
+  if (typeof value !== 'object') return false;
+  if ('paginationOptions' in value) {
+    const options = value.paginationOptions;
+    if (
+      !(
+        (Array.isArray(options) &&
+          options.every((opt) => Number.isInteger(opt))) ||
+        (Number.isInteger(options) && options > 0)
+      )
+    ) {
+      console.warn(
+        'Invalid paginationOptions, must be an integer or array of integers',
+      );
+      return false;
+    }
+  }
+  if ('showPagination' in value && typeof value.showPagination !== 'boolean') {
+    console.warn('Invalid showPagination, must be a boolean');
+    return false;
+  }
+  if (
+    'tableFilter' in value &&
+    typeof value.tableFilter !== 'string' &&
+    value.tableFilter !== null
+  ) {
+    console.warn('Invalid tableFilter, must be a string or null');
+    return false;
+  }
+  if ('inlineSearch' in value && typeof value.inlineSearch !== 'boolean') {
+    console.warn('Invalid inlineSearch, must be a boolean');
+    return false;
+  }
+  return true;
+};
+
 export default {
   i18n,
   props: {
@@ -261,23 +297,10 @@ export default {
     tableOptions: {
       type: Object,
       default: () => defaultTableOptions,
-      validator(value) {
-        return (
-          typeof value === 'object' &&
-          (!value.perPageOptions ||
-            (Array.isArray(value.perPageOptions) &&
-              value.perPageOptions.every(
-                (opt) => typeof opt === 'number' && opt > 0,
-              ))) && // must be array of positive numbers
-          (!value.perPageDefault || typeof value.perPageDefault === 'number') &&
-          (!value.showPagination ||
-            typeof value.showPagination === 'boolean') &&
-          (!value.tableFilter || typeof value.tableFilter === 'string') &&
-          (!value.inlineSearch || typeof value.inlineSearch === 'boolean')
-        );
-      },
+      validator: tableOptionsValidator,
     },
   },
+
   mixins: [],
   components: { Multiselect, SelectProjectModal },
   data() {
@@ -308,45 +331,45 @@ export default {
       ],
     };
   },
+
   created() {
-    const pageOptions = this.mergedTableOptions.perPageOptions;
-    this.perPage = pageOptions
-      ? pageOptions[0]
-      : this.mergedTableOptions.perPageDefault;
+    this.resolvePerPage();
   },
+
   computed: {
     mergedTableOptions() {
       return { ...defaultTableOptions, ...this.tableOptions };
     },
+
     rows() {
       return this.projectRolesCurrent?.length ?? 0;
     },
+
     paginationOptions() {
-      const options = this.mergedTableOptions.perPageOptions;
-      return (
-        options ??
-        _.map(
-          new Array(3),
-          (_, i) => (i + 1) * this.mergedTableOptions.perPageDefault,
-        )
-      );
+      const options = this.mergedTableOptions.paginationOptions;
+      if (Array.isArray(options)) return options;
+      return _.map(new Array(3), (_, i) => (i + 1) * this.perPageDefault);
     },
+
     paginationOptionsText() {
       return this.$t('admin.pagination_per_page', {
         count: this.perPage || this.$t('admin.pagination_all'),
       });
     },
+
     shouldRenderPagination() {
       return (
         this.mergedTableOptions.showPagination &&
-        this.mergedTableOptions.perPageDefault < this.rows
+        this.perPageDefault < this.rows
       );
     },
+
     shouldRenderInlineSearch() {
       return (
         this.mergedTableOptions.inlineSearch && this.shouldRenderPagination
       );
     },
+
     currentPageText() {
       const start = (this.currentPage - 1) * this.perPage + 1;
       const end = Math.min(this.currentPage * this.perPage, this.rows);
@@ -356,7 +379,15 @@ export default {
         total: this.rows,
       });
     },
+
+    perPageDefault() {
+      const options = this.mergedTableOptions.paginationOptions;
+      if (Array.isArray(options)) return options[0];
+      if (Number.isInteger(options) && options > 0) return options;
+      return defaultTableOptions.paginationOptions[0];
+    },
   },
+
   watch: {
     searchActive(newVal) {
       // safeguard against invalid page when filter is cleared
@@ -370,23 +401,28 @@ export default {
       while (this.previousPage > maxPage) this.previousPage -= 1;
       this.currentPage = this.previousPage;
     },
+
     rows(newVal) {
       // safeguard against invalid page when rows change
       const maxPage = Math.ceil(newVal / this.perPage) || 1;
       if (this.currentPage <= maxPage) return;
       this.currentPage = maxPage;
     },
+
     projectRoles(newValue) {
       if (!newValue) return;
       this.assignProjectMapping(newValue);
     },
+
     localTableFilter(newVal, oldVal) {
       this.handleTableFilter(newVal, oldVal);
     },
+
     'mergedTableOptions.tableFilter'(newVal, oldVal) {
       this.handleTableFilter(newVal, oldVal);
     },
   },
+
   methods: {
     assignProjectMapping(project) {
       this.projectRolesCurrent = project.map((project) => ({
@@ -395,6 +431,15 @@ export default {
         disabled: false,
         loading: false,
       }));
+    },
+
+    resolvePerPage() {
+      if (!this.mergedTableOptions.showPagination) {
+        this.perPage = 0;
+        return;
+      }
+      const options = this.mergedTableOptions.paginationOptions;
+      this.perPage = Array.isArray(options) ? options[0] : options;
     },
 
     handleTableFilter(newVal, oldVal) {
