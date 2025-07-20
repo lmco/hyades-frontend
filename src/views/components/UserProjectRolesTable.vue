@@ -161,7 +161,7 @@
           :text="paginationOptionsText"
           variant="outline-primary"
           size="sm"
-          class="h-100"
+          class="pagination-dropdown"
         >
           <b-dropdown-item
             v-for="option in paginationOptions"
@@ -574,21 +574,28 @@ export default {
   border: 1px solid var(--primary);
   box-sizing: border-box;
   border-radius: 0.2rem;
+
+  .page-link,
+  .page-item {
+    border: none !important;
+  }
 }
 
-::v-deep .pagination .page-link,
-::v-deep .pagination .page-item {
-  border: none !important; // Remove inner borders
+::v-deep .pagination-dropdown {
+  height: 100%;
+  &:not(.show) > button:not(:hover) {
+    background-color: $grey-750;
+  }
 }
 
 ::v-deep .project-column {
   white-space: no-wrap;
   text-wrap: wrap;
   max-width: 12.5rem;
-}
 
-::v-deep .project-column span {
-  text-overflow: ellipsis;
+  span {
+    text-overflow: ellipsis;
+  }
 }
 
 ::v-deep .role-column {
@@ -610,26 +617,23 @@ export default {
   margin: 0;
   border: 0;
   background-color: transparent;
-}
 
-.action-icon .fa {
-  font-size: 1.2rem;
-}
+  .fa {
+    font-size: 1.2rem;
 
-.action-icon .fa-edit {
-  color: var(--secondary);
-}
-
-.action-icon .fa-trash-o {
-  color: var(--danger);
-}
-
-.action-icon .fa-tasks {
-  opacity: 30%;
-}
-
-.action-icon .fa-plus-square {
-  color: var(--primary);
+    &.fa-edit {
+      color: var(--secondary);
+    }
+    &.fa-trash-o {
+      color: var(--danger);
+    }
+    &.fa-tasks {
+      opacity: 30%;
+    }
+    &.fa-plus-square {
+      color: var(--primary);
+    }
+  }
 }
 
 ::v-deep .text-ellipsis {
