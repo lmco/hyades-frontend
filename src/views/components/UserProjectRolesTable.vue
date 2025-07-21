@@ -246,7 +246,7 @@ import i18n from '../../i18n';
 import _ from 'lodash';
 
 const defaultTableOptions = {
-  paginationOptions: [5, 10, 25],
+  paginationOptions: [10, 25, 50],
   showPagination: true,
   tableFilter: null,
   inlineSearch: false,
