@@ -86,5 +86,10 @@ export default {
     user-select: all;
     overflow-wrap: anywhere;
   }
+
+  .text-area:empty::before {
+    content: '\00a0';
+    display: inline-block;
+  }
 }
 </style>

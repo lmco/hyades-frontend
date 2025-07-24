@@ -15,7 +15,7 @@
       <b-card-body>
         <!-- GitLab Integration Config Group -->
         <div class="mb-4">
-          <h5 class="mb-3">OIDC {{ $t('admin.configuration') }}</h5>
+          <label class="mb-3">OIDC {{ $t('admin.configuration') }}</label>
           <copy-field
             v-model="$oidc.CLIENT_ID"
             :label="$t('admin.app_id')"
@@ -37,7 +37,7 @@
             <span>{{ $t('admin.include_archived_projects') }}</span>
           </div>
           <div>
-            <label>{{ $t('admin.topics') }}</label>
+            <label class="mb-3">{{ $t('admin.topics') }}</label>
             <multiselect
               v-model="topics"
               :options="mOptions"
