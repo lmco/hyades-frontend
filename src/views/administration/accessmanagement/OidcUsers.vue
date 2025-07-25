@@ -24,12 +24,12 @@
 
 <script>
 import xssFilters from 'xss-filters';
-import common from '../../../../shared/common';
-import CreateOidcUserModal from '../CreateOidcUserModal';
-import bootstrapTableMixin from '../../../../mixins/bootstrapTableMixin';
-import EventBus from '../../../../shared/eventbus';
-import UserDetails from './UserDetails.vue';
-import i18n from '../../../../i18n';
+import common from '../../../shared/common';
+import CreateOidcUserModal from './CreateOidcUserModal';
+import bootstrapTableMixin from '../../../mixins/bootstrapTableMixin';
+import EventBus from '../../../shared/eventbus';
+import UserDetails from '../../components/detail-formatters/UserDetails';
+import i18n from '../../../i18n';
 
 export default {
   name: 'OidcUsersView',
@@ -118,7 +118,12 @@ export default {
         detailFormatter: (index, row) => {
           return this.vueFormatter({
             render: () => (
-              <UserDetails row={row} index={index} rowEvents={this.rowEvents} />
+              <UserDetails
+                userType="oidc"
+                row={row}
+                index={index}
+                rowEvents={this.rowEvents}
+              />
             ),
           });
         },
