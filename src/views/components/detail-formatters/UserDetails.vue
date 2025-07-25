@@ -465,30 +465,7 @@ export default {
       }
     },
 
-    loadUserManagementData: function () {
-      this.loadUserProjects(this.row[this._identifierField])
-        .then((projectRoles) => {
-          this.$set(this, 'projectRoles', projectRoles);
-        })
-        .catch((error) => {
-          this.handleError(error, tMsg);
-          const tMsg = this.$t('message.project_role_mappings_failed');
-          this.$set(this, 'projectRoles', []);
-        });
-
-      this.loadAvailableProjectRoles()
-        .then((availableRoles) => {
-          this.$set(this, 'availableRoles', availableRoles);
-        })
-        .catch((error) => {
-          this.$set(this, 'availableRoles', []);
-          const tMsg = this.$t('message.available_roles_failed');
-          this.handleError(error, tMsg);
-        });
-    },
-
     // -- utility methods --
-
     handleProjectRole: async function (action, projectRole, callbacks = null) {
       const { role, project } = projectRole;
       const endpoint = `${this.$api.BASE_URL}/${this.$api.URL_USER_ROLE}`;
