@@ -24,13 +24,15 @@
 
 <script>
 import xssFilters from 'xss-filters';
-import common from '../../../../shared/common';
-import bootstrapTableMixin from '../../../../mixins/bootstrapTableMixin';
-import EventBus from '../../../../shared/eventbus';
-import UserDetails from './UserDetails.vue';
-import CreateManagedUserModal from '../CreateManagedUserModal.vue';
+import common from '../../../shared/common';
+import CreateManagedUserModal from './CreateManagedUserModal.vue';
+import bootstrapTableMixin from '../../../mixins/bootstrapTableMixin';
+import EventBus from '../../../shared/eventbus';
+import UserDetails from '../../components/detail-formatters/UserDetails.vue';
+import i18n from '../../../i18n';
 
 export default {
+  i18n,
   name: 'ManagedUsersView',
   props: {
     header: String,
@@ -124,7 +126,12 @@ export default {
         detailFormatter: (index, row) => {
           return this.vueFormatter({
             render: () => (
-              <UserDetails row={row} index={index} rowEvents={this.rowEvents} />
+              <UserDetails
+                userType="managed"
+                row={row}
+                index={index}
+                rowEvents={this.rowEvents}
+              />
             ),
           });
         },
