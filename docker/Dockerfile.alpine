@@ -1,4 +1,4 @@
-FROM nginxinc/nginx-unprivileged:1.29.8-alpine@sha256:f35982400455b4f359083ba9d1ef573fbbe4221a6a8a194dc7a14beb4e2cd3dc
+FROM harbor.global.lmco.com/ext.quay.io/nginx/nginx-unprivileged@sha256:01672be1133dfd2346ecc7a2581e67dcf6626ba7d0517f31f3f5cf8b8287a56f
 
 # Arguments that can be passed at build time
 ARG COMMIT_SHA=unknown
@@ -10,12 +10,22 @@ ENV TZ=Etc/UTC \
     # Set default settings that may get overridden to empty values by
     # the entrypoint script, if not explicitly provided by the user
     OIDC_SCOPE="openid profile email" \
-    BASE_PATH="/"
+    BASE_PATH="/" \
+    # LM Proxy
+    http_proxy="http://proxy-zsgov.external.lmco.com:80" \
+    HTTP_PROXY="$http_proxy" \
+    https_proxy="http://proxy-zsgov.external.lmco.com:80" \
+    HTTPS_PROXY="$https_proxy" \
+    no_proxy="lmco.com,localdomain,localhost,127.0.0.1,.amazonaws.com,.lmco.com" \
+    NO_PROXY="$no_proxy"
 
 USER root
 
 # Copy the static HTML and JS files to the application directory
 COPY ./dist ${APP_DIR}
+
+# LM Certs
+COPY docker/Combined_pem.pem /usr/local/share/ca-certificates/Combined_pem.crt
 
 # Create the directorie where the frontend files will be deployed to (${APP_DIR})
 # Ensure UID 101 & GID 0 own all the needed directories
@@ -23,7 +33,7 @@ COPY ./dist ${APP_DIR}
 RUN chown -R 101:0 ${APP_DIR} \
     && chmod -R g=u ${APP_DIR} \
     # add jq to easily manipulate config.json in entrypoint script
-    && apk --no-cache add jq
+    && apk add jq>=1.8.1-r0
 
 # Specify the user to run as (in numeric format for compatibility with Kubernetes/OpenShift's SCC)
 # Inherited from parent image
